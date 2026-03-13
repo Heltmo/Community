@@ -3,87 +3,257 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sign Up</title>
+    <title>Brim Brotherhood — Sign Up</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet" />
     <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
       body {
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+        font-family: 'Inter', system-ui, sans-serif;
         min-height: 100vh;
-        margin: 0;
-        padding: 1rem;
-        background: #f5f5f5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        background: #080810;
+        overflow: hidden;
       }
 
-      .container {
-        background: #fff;
-        padding: 2rem;
-        border-radius: 0.5rem;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-        width: min(400px, 100%);
+      /* Animated background */
+      body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background:
+          radial-gradient(ellipse 80% 60% at 20% 10%, rgba(255, 160, 0, 0.12) 0%, transparent 60%),
+          radial-gradient(ellipse 60% 50% at 80% 90%, rgba(200, 80, 255, 0.10) 0%, transparent 60%),
+          radial-gradient(ellipse 50% 40% at 50% 50%, rgba(30, 30, 80, 0.8) 0%, transparent 100%);
+        animation: bgPulse 8s ease-in-out infinite alternate;
+        pointer-events: none;
+      }
+
+      @keyframes bgPulse {
+        0%   { opacity: 0.7; }
+        100% { opacity: 1; }
+      }
+
+      /* Grid lines */
+      body::after {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+        background-size: 48px 48px;
+        pointer-events: none;
+      }
+
+      .card {
+        position: relative;
+        width: min(440px, 100%);
+        background: rgba(15, 15, 25, 0.75);
+        border: 1px solid rgba(255, 160, 0, 0.18);
+        border-radius: 1.5rem;
+        padding: 2.75rem 2.5rem;
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        box-shadow:
+          0 0 0 1px rgba(255,255,255,0.04),
+          0 32px 80px rgba(0,0,0,0.6),
+          0 0 60px rgba(255, 140, 0, 0.06);
+        animation: cardIn 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+      }
+
+      @keyframes cardIn {
+        from { opacity: 0; transform: translateY(30px) scale(0.97); }
+        to   { opacity: 1; transform: translateY(0) scale(1); }
+      }
+
+      /* Glow border top */
+      .card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 10%; right: 10%;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255,160,0,0.7), transparent);
+        border-radius: 100%;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        margin-bottom: 2rem;
+      }
+
+      .brand-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #ff9f00, #ff4500);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        box-shadow: 0 0 16px rgba(255,140,0,0.5);
+      }
+
+      .brand-name {
+        font-size: 0.85rem;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.9);
+      }
+
+      .brand-name span {
+        color: #ff9f00;
       }
 
       h1 {
-        margin: 0 0 0.5rem;
-        font-size: 1.75rem;
+        font-size: 2rem;
+        font-weight: 900;
+        color: #fff;
+        letter-spacing: -0.03em;
+        line-height: 1.1;
+        margin-bottom: 0.5rem;
       }
 
-      p {
-        margin: 0 0 1.5rem;
-        color: #555;
+      .subtitle {
+        font-size: 0.9rem;
+        color: rgba(255,255,255,0.4);
+        margin-bottom: 2rem;
+        font-weight: 400;
+      }
+
+      .divider {
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+        margin-bottom: 2rem;
+      }
+
+      .field {
+        margin-bottom: 1.25rem;
       }
 
       label {
         display: block;
-        margin: 0.75rem 0 0.25rem;
+        font-size: 0.78rem;
         font-weight: 600;
-        font-size: 0.95rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.5);
+        margin-bottom: 0.45rem;
       }
 
       input {
         width: 100%;
-        padding: 0.6rem 0.75rem;
-        font-size: 1rem;
-        border: 1px solid #ccc;
-        border-radius: 0.35rem;
-        box-sizing: border-box;
+        padding: 0.75rem 1rem;
+        font-size: 0.95rem;
+        font-family: inherit;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 0.75rem;
+        color: #fff;
+        outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
       }
 
-      button {
-        margin-top: 1.5rem;
-        width: 100%;
-        padding: 0.75rem;
-        border: none;
-        border-radius: 0.35rem;
-        font-size: 1rem;
-        background-color: #2563eb;
-        color: white;
+      input::placeholder { color: rgba(255,255,255,0.2); }
+
+      input:focus {
+        border-color: rgba(255,160,0,0.6);
+        background: rgba(255,160,0,0.04);
+        box-shadow: 0 0 0 3px rgba(255,160,0,0.1);
+      }
+
+      /* Date input color fix */
+      input[type="date"]::-webkit-calendar-picker-indicator {
+        filter: invert(0.5) sepia(1) saturate(3) hue-rotate(5deg);
+        opacity: 0.6;
         cursor: pointer;
       }
 
-      button:hover {
-        background-color: #1d4ed8;
+      button {
+        margin-top: 0.75rem;
+        width: 100%;
+        padding: 0.85rem;
+        font-size: 0.95rem;
+        font-family: inherit;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        border: none;
+        border-radius: 0.75rem;
+        cursor: pointer;
+        background: linear-gradient(135deg, #ff9f00 0%, #ff5500 100%);
+        color: #fff;
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.15s, box-shadow 0.2s;
+        box-shadow: 0 4px 24px rgba(255,140,0,0.35);
       }
+
+      button::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, rgba(255,255,255,0.12) 0%, transparent 60%);
+        pointer-events: none;
+      }
+
+      button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 32px rgba(255,140,0,0.5);
+      }
+
+      button:active {
+        transform: translateY(1px);
+        box-shadow: 0 2px 12px rgba(255,140,0,0.3);
+      }
+
+      .footer-note {
+        text-align: center;
+        margin-top: 1.5rem;
+        font-size: 0.75rem;
+        color: rgba(255,255,255,0.2);
+        letter-spacing: 0.03em;
+      }
+
+      .footer-note span { color: rgba(255,160,0,0.5); }
     </style>
   </head>
   <body>
-    <main class="container">
+    <main class="card">
+      <div class="brand">
+        <div class="brand-icon">⚔️</div>
+        <div class="brand-name">Brim <span>Brotherhood</span></div>
+      </div>
+
+      <h1>Join the<br>Brotherhood.</h1>
+      <p class="subtitle">Enter your details to request access.</p>
+      <div class="divider"></div>
+
       <form>
-        <h1>Sign Up</h1>
-        <p>Enter your details below</p>
+        <div class="field">
+          <label for="fullName">Full Name</label>
+          <input type="text" id="fullName" name="fullName" placeholder="Your full name" autocomplete="name" />
+        </div>
 
-        <label for="fullName">Full Name</label>
-        <input type="text" id="fullName" name="fullName" autocomplete="name" />
+        <div class="field">
+          <label for="birthday">Date of Birth</label>
+          <input type="date" id="birthday" name="birthday" />
+        </div>
 
-        <label for="birthday">Birthday</label>
-        <input type="date" id="birthday" name="birthday" />
+        <div class="field">
+          <label for="phoneNumber">Phone Number</label>
+          <input type="tel" id="phoneNumber" name="phoneNumber" placeholder="+1 (000) 000-0000" autocomplete="tel" />
+        </div>
 
-        <label for="phoneNumber">Phone Number</label>
-        <input type="tel" id="phoneNumber" name="phoneNumber" autocomplete="tel" />
-
-        <button type="submit">Sign Up</button>
+        <button type="submit">Request Access →</button>
       </form>
+
+      <p class="footer-note">© 2026 <span>Brim Brotherhood</span> — All rights reserved.</p>
     </main>
   </body>
 </html>
