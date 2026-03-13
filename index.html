@@ -8,6 +8,10 @@
     <style>
       *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+      html, body {
+        height: 100%;
+      }
+
       body {
         font-family: 'Inter', system-ui, sans-serif;
         min-height: 100vh;
@@ -16,54 +20,70 @@
         justify-content: center;
         padding: 2rem 1.25rem;
         background: #0d0e1a;
+        position: relative;
+        overflow: hidden;
       }
 
-      /* Soft gradient orbs — not aggressive, just depth */
-      body::before {
-        content: '';
+      /* ── VIDEO BACKGROUND ─────────────────────────────── */
+      .bg-video-wrap {
         position: fixed;
         inset: 0;
+        z-index: 0;
+      }
+
+      .bg-video-wrap video {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0;
+        transition: opacity 1.4s ease-in-out;
+        /* slight scale for a slow-zoom Ken Burns feel */
+        transform: scale(1.05);
+      }
+
+      .bg-video-wrap video.active {
+        opacity: 1;
+      }
+
+      /* Dark overlay — keeps card readable, edges slightly lighter */
+      .bg-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 1;
         background:
-          radial-gradient(ellipse 70% 55% at 15% 5%,  rgba(110, 80, 220, 0.14) 0%, transparent 65%),
-          radial-gradient(ellipse 55% 45% at 85% 95%, rgba(200, 130, 60,  0.08) 0%, transparent 65%),
-          radial-gradient(ellipse 40% 35% at 55% 45%, rgba(60,  80,  160, 0.10) 0%, transparent 70%);
+          radial-gradient(ellipse 55% 65% at 50% 50%,
+            rgba(8, 8, 18, 0.72) 0%,
+            rgba(8, 8, 18, 0.52) 60%,
+            rgba(8, 8, 18, 0.35) 100%),
+          linear-gradient(180deg, rgba(8,8,18,0.45) 0%, rgba(8,8,18,0.55) 100%);
         pointer-events: none;
       }
 
-      /* Very faint grid — just texture, no drama */
-      body::after {
-        content: '';
-        position: fixed;
-        inset: 0;
-        background-image:
-          linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
-        background-size: 52px 52px;
-        pointer-events: none;
-      }
-
+      /* ── CARD ─────────────────────────────────────────── */
       .card {
         position: relative;
+        z-index: 2;
         width: min(460px, 100%);
-        background: rgba(18, 18, 32, 0.82);
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(12, 12, 22, 0.80);
+        border: 1px solid rgba(255, 255, 255, 0.09);
         border-radius: 1.75rem;
         padding: 3rem 2.75rem;
-        backdrop-filter: blur(28px);
-        -webkit-backdrop-filter: blur(28px);
+        backdrop-filter: blur(32px);
+        -webkit-backdrop-filter: blur(32px);
         box-shadow:
           0 0 0 1px rgba(255,255,255,0.03),
-          0 40px 100px rgba(0,0,0,0.55),
-          0 0 80px rgba(100,70,200,0.06);
-        animation: rise 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+          0 40px 100px rgba(0,0,0,0.65),
+          0 0 80px rgba(100,70,200,0.08);
+        animation: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
       }
 
       @keyframes rise {
-        from { opacity: 0; transform: translateY(24px); }
+        from { opacity: 0; transform: translateY(28px); }
         to   { opacity: 1; transform: translateY(0); }
       }
 
-      /* Top edge glow — violet, not orange */
       .card::before {
         content: '';
         position: absolute;
@@ -72,7 +92,7 @@
         background: linear-gradient(90deg, transparent, rgba(140, 100, 255, 0.55), transparent);
       }
 
-      /* Brand mark */
+      /* ── BRAND ────────────────────────────────────────── */
       .brand {
         display: flex;
         align-items: center;
@@ -96,6 +116,7 @@
         color: rgba(255,255,255,0.45);
       }
 
+      /* ── TYPOGRAPHY ───────────────────────────────────── */
       h1 {
         font-size: 2rem;
         font-weight: 700;
@@ -110,7 +131,7 @@
         color: rgba(255,255,255,0.38);
         margin-bottom: 2.25rem;
         font-weight: 400;
-        line-height: 1.5;
+        line-height: 1.6;
       }
 
       .divider {
@@ -119,9 +140,8 @@
         margin-bottom: 2.25rem;
       }
 
-      .field {
-        margin-bottom: 1.2rem;
-      }
+      /* ── FORM ─────────────────────────────────────────── */
+      .field { margin-bottom: 1.2rem; }
 
       label {
         display: block;
@@ -198,6 +218,28 @@
     </style>
   </head>
   <body>
+
+    <!-- ── BACKGROUND VIDEO MONTAGE ──────────────────────── -->
+    <!--
+      Replace the src attributes below with your own video files.
+      Recommended clips (4–6 seconds each, no sound needed):
+        video-1 → folk som spiller fotball (energi, glede, samspill)
+        video-2 → tur i skogen (ro, natur, frihet, samhold)
+        video-3 → folk som drikker te sammen (varme, nærhet, samtale)
+        video-4 → valgfritt fellesskapsøyeblikk (avsluttende stemning)
+
+      Tips: MP4 under 5 MB per klipp gir rask lastetid.
+      Tool: https://www.freeconvert.com/video-compressor
+    -->
+    <div class="bg-video-wrap" id="bgWrap">
+      <video class="active" src="video-1.mp4" muted playsinline preload="auto"></video>
+      <video             src="video-2.mp4" muted playsinline preload="auto"></video>
+      <video             src="video-3.mp4" muted playsinline preload="auto"></video>
+      <video             src="video-4.mp4" muted playsinline preload="auto"></video>
+    </div>
+    <div class="bg-overlay"></div>
+
+    <!-- ── FORM CARD ──────────────────────────────────────── -->
     <main class="card">
       <div class="brand">
         <div class="brand-dot"></div>
@@ -211,7 +253,7 @@
       <form>
         <div class="field">
           <label for="fullName">Fullt Navn</label>
-          <input type="text" id="fullName" name="fullName" placeholder="Your full name" autocomplete="name" />
+          <input type="text" id="fullName" name="fullName" placeholder="Ditt fulle navn" autocomplete="name" />
         </div>
 
         <div class="field">
@@ -221,7 +263,7 @@
 
         <div class="field">
           <label for="phoneNumber">Telefonnummer</label>
-          <input type="tel" id="phoneNumber" name="phoneNumber" placeholder="+1 (000) 000-0000" autocomplete="tel" />
+          <input type="tel" id="phoneNumber" name="phoneNumber" placeholder="+47 000 00 000" autocomplete="tel" />
         </div>
 
         <button type="submit">Bli medlem</button>
@@ -229,5 +271,36 @@
 
       <p class="footer-note">© 2026 Brim Community — All rights reserved.</p>
     </main>
+
+    <script>
+      (function () {
+        const wrap    = document.getElementById('bgWrap');
+        const videos  = Array.from(wrap.querySelectorAll('video'));
+        const HOLD    = 5500;   // ms each clip is visible
+        const FADE    = 1400;   // ms crossfade (matches CSS transition)
+        let   current = 0;
+
+        // Start playing all videos so they're ready when needed
+        videos.forEach((v, i) => {
+          v.loop = true;
+          v.play().catch(() => {}); // silent if browser blocks
+        });
+
+        function next() {
+          const prev = current;
+          current    = (current + 1) % videos.length;
+
+          videos[current].classList.add('active');
+
+          // Remove previous after fade completes
+          setTimeout(() => {
+            videos[prev].classList.remove('active');
+          }, FADE);
+        }
+
+        // Cycle every HOLD ms
+        setInterval(next, HOLD);
+      })();
+    </script>
   </body>
 </html>
