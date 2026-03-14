@@ -99,7 +99,7 @@ DROP POLICY IF EXISTS "posts_select" ON community_posts;
 DROP POLICY IF EXISTS "posts_insert" ON community_posts;
 DROP POLICY IF EXISTS "posts_delete" ON community_posts;
 CREATE POLICY "posts_select" ON community_posts FOR SELECT TO authenticated USING (true);
-CREATE POLICY "posts_insert" ON community_posts FOR INSERT TO authenticated WITH CHECK (auth.uid() = author_id);
+CREATE POLICY "posts_insert" ON community_posts FOR INSERT TO authenticated WITH CHECK (author_id IS NULL OR auth.uid() = author_id);
 CREATE POLICY "posts_delete" ON community_posts FOR DELETE TO authenticated USING (auth.uid() = author_id);
 
 -- tournaments (public read, admin write handled in app)
