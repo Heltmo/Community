@@ -298,6 +298,15 @@
         border-radius: 99px;
         transition: width 0.9s cubic-bezier(0.22, 1, 0.36, 1);
       }
+
+      .counter-tagline {
+        margin-top: 0.65rem;
+        font-size: 0.75rem;
+        font-weight: 400;
+        color: rgba(255,255,255,0.22);
+        letter-spacing: 0.04em;
+        font-style: italic;
+      }
     </style>
   </head>
   <body>
@@ -376,12 +385,13 @@
       <!-- ── COUNTER ──────────────────────────────────────── -->
       <div class="counter-section">
         <div class="counter-header">
-          <span class="counter-label">Medlemmer</span>
+          <span class="counter-label">Medlemsmål</span>
           <span class="counter-numbers"><span id="countNum">–</span> / 200</span>
         </div>
         <div class="progress-track">
           <div class="progress-fill" id="progressFill"></div>
         </div>
+        <p class="counter-tagline">Ett mål. Ett fellesskap. Ett gjennombrudd.</p>
       </div>
 
       <p class="footer-note">© 2026 Brim Community — All rights reserved.</p>
