@@ -371,8 +371,18 @@
       <p class="footer-note">© 2026 Brim Community — All rights reserved.</p>
     </main>
 
+    <!-- Supabase JS client (CDN) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
     <script>
       const GOAL = 200;
+
+      /* ── SUPABASE CLIENT ───────────────────────────────── */
+      const { createClient } = supabase;
+      const db = createClient(
+        'https://ytwicopssgskffjmolmu.supabase.co',
+        'sb_publishable_ONwJ-AHc8RGSvphR-9GaEA_AMQONxAC'
+      );
 
       /* ── VIDEO MONTAGE ─────────────────────────────────── */
       (function () {
@@ -402,28 +412,25 @@
       }
 
       async function fetchCount() {
-        try {
-          const res  = await fetch('/api/members/count');
-          const data = await res.json();
-          setCounter(data.antall);
-        } catch (_) {
-          // server not reachable — hide counter gracefully
-          document.getElementById('countNum').textContent = '–';
-        }
+        const { count, error } = await db
+          .from('members')
+          .select('*', { count: 'exact', head: true });
+
+        if (!error) setCounter(count);
       }
 
-      fetchCount(); // run on page load
+      fetchCount();
 
       /* ── FORM SUBMIT ───────────────────────────────────── */
       document.getElementById('regForm').addEventListener('submit', async function (e) {
         e.preventDefault();
 
-        const navn    = document.getElementById('fullName').value.trim();
-        const telefon = document.getElementById('phoneNumber').value.trim();
-        const kommune = document.getElementById('kommune').value.trim();
-        const bekreft = document.getElementById('bekreft').checked;
+        const name         = document.getElementById('fullName').value.trim();
+        const phone        = document.getElementById('phoneNumber').value.trim();
+        const municipality = document.getElementById('kommune').value.trim();
+        const bekreft      = document.getElementById('bekreft').checked;
 
-        if (!navn || !telefon || !kommune || !bekreft) {
+        if (!name || !phone || !municipality || !bekreft) {
           alert('Vennligst fyll ut alle obligatoriske felt og bekreft medlemskap.');
           return;
         }
@@ -432,34 +439,25 @@
         btn.disabled    = true;
         btn.textContent = 'Sender…';
 
-        try {
-          const res  = await fetch('/api/members', {
-            method:  'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body:    JSON.stringify({
-              navn,
-              telefon,
-              e_post:            document.getElementById('email').value.trim(),
-              kommune,
-              ønsker_medlemskap: true
-            })
-          });
+        const { error } = await db.from('members').insert({
+          name,
+          phone,
+          email:            document.getElementById('email').value.trim() || null,
+          municipality,
+          wants_membership: true,
+          join_date:        new Date().toISOString().slice(0, 10)
+        });
 
-          const data = await res.json();
-
-          if (!res.ok) {
-            alert(data.error || 'Noe gikk galt. Prøv igjen.');
-          } else {
-            setCounter(data.antall);
-            alert('Takk, ' + navn + '! Registreringen din er mottatt.');
-            this.reset();
-          }
-        } catch (_) {
-          alert('Kunne ikke nå serveren. Sjekk at backend kjører.');
-        } finally {
-          btn.disabled    = false;
-          btn.textContent = 'Bli medlem';
+        if (error) {
+          alert('Noe gikk galt: ' + error.message);
+        } else {
+          await fetchCount();
+          alert('Takk, ' + name + '! Registreringen din er mottatt.');
+          this.reset();
         }
+
+        btn.disabled    = false;
+        btn.textContent = 'Bli medlem';
       });
     </script>
   </body>
