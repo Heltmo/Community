@@ -425,18 +425,12 @@
       <p class="footer-note">© 2026 Brim Community — All rights reserved.</p>
     </main>
 
-    <!-- Supabase JS client (CDN) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script src="js/brim.js"></script>
 
     <script>
       const GOAL = 200;
-
-      /* ── SUPABASE CLIENT ───────────────────────────────── */
-      const { createClient } = supabase;
-      const db = createClient(
-        'https://ytwicopssgskffjmolmu.supabase.co',
-        'sb_publishable_ONwJ-AHc8RGSvphR-9GaEA_AMQONxAC'
-      );
+      // db and formatPhone come from js/brim.js
 
       /* ── VIDEO MONTAGE ─────────────────────────────────── */
       (function () {
@@ -530,28 +524,35 @@
 
         const btn = this.querySelector('button[type="submit"]');
         btn.disabled    = true;
-        btn.textContent = 'Sender…';
+        btn.textContent = 'Sender kode…';
 
-        const { error } = await db.from('members').insert({
+        // Format phone for Supabase (E.164)
+        const formattedPhone = formatPhone(phone);
+
+        // Send OTP via Supabase phone auth
+        const { error: otpError } = await db.auth.signInWithOtp({ phone: formattedPhone });
+
+        if (otpError) {
+          alert('Kunne ikke sende kode: ' + otpError.message);
+          btn.disabled    = false;
+          btn.textContent = 'Bli medlem';
+          return;
+        }
+
+        // Store registration data for after OTP verification
+        sessionStorage.setItem('brim_flow',         'register');
+        sessionStorage.setItem('brim_phone',         formattedPhone);
+        sessionStorage.setItem('brim_reg', JSON.stringify({
           name,
-          phone,
+          phone:            formattedPhone,
           email:            document.getElementById('email').value.trim() || null,
           birthdate,
           municipality,
           wants_membership: true,
           join_date:        new Date().toISOString().slice(0, 10)
-        });
+        }));
 
-        if (error) {
-          alert('Noe gikk galt: ' + error.message);
-        } else {
-          await fetchCount();
-          alert('Takk, ' + name + '! Registreringen din er mottatt.');
-          this.reset();
-        }
-
-        btn.disabled    = false;
-        btn.textContent = 'Bli medlem';
+        window.location.href = 'verify.html';
       });
     </script>
   </body>

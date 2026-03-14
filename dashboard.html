@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="no">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Brim — Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      html, body { height: 100%; }
+
+      body {
+        font-family: 'Inter', system-ui, sans-serif;
+        background: #080810;
+        color: #fff;
+        display: flex;
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      /* ── SIDEBAR ─────────────────────────────────────── */
+      .sidebar {
+        width: 240px;
+        min-height: 100vh;
+        background: rgba(8,8,18,0.97);
+        border-right: 1px solid rgba(255,255,255,0.06);
+        display: flex;
+        flex-direction: column;
+        padding: 2rem 0;
+        position: fixed;
+        top: 0; left: 0;
+        z-index: 100;
+      }
+
+      .sidebar-logo {
+        display: flex; align-items: center; gap: 0.6rem;
+        padding: 0 1.5rem 2rem;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+        margin-bottom: 1.5rem;
+      }
+      .sidebar-logo .dot {
+        width: 10px; height: 10px; border-radius: 50%;
+        background: linear-gradient(135deg, #a78bfa, #c4b5fd);
+        box-shadow: 0 0 10px rgba(167,139,250,0.5);
+      }
+      .sidebar-logo span {
+        font-size: 0.75rem; font-weight: 700;
+        letter-spacing: 0.18em; text-transform: uppercase;
+        color: rgba(255,255,255,0.5);
+      }
+
+      .nav-section {
+        font-size: 0.65rem; font-weight: 700;
+        letter-spacing: 0.14em; text-transform: uppercase;
+        color: rgba(255,255,255,0.22);
+        padding: 0 1.5rem; margin-bottom: 0.5rem; margin-top: 1rem;
+      }
+
+      .nav-item {
+        display: flex; align-items: center; gap: 0.75rem;
+        padding: 0.65rem 1.5rem;
+        font-size: 0.875rem; font-weight: 500;
+        color: rgba(255,255,255,0.45);
+        cursor: pointer;
+        transition: color 0.15s, background 0.15s;
+        border-radius: 0;
+        user-select: none;
+      }
+      .nav-item:hover { color: rgba(255,255,255,0.8); background: rgba(255,255,255,0.04); }
+      .nav-item.active { color: #a78bfa; background: rgba(167,139,250,0.08); border-right: 2px solid #a78bfa; }
+      .nav-item .icon { width: 18px; text-align: center; font-size: 1rem; }
+
+      .sidebar-bottom {
+        margin-top: auto;
+        border-top: 1px solid rgba(255,255,255,0.06);
+        padding-top: 1.25rem;
+      }
+
+      .sidebar-user {
+        display: flex; align-items: center; gap: 0.75rem;
+        padding: 0 1.5rem;
+      }
+      .avatar {
+        width: 36px; height: 36px; border-radius: 50%;
+        background: linear-gradient(135deg, #7c5cfc, #a78bfa);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0.85rem; font-weight: 700; color: #fff; flex-shrink: 0;
+      }
+      .user-info { overflow: hidden; }
+      .user-name { font-size: 0.82rem; font-weight: 600; color: rgba(255,255,255,0.85); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .user-level { font-size: 0.68rem; color: rgba(167,139,250,0.7); }
+
+      /* ── MAIN ────────────────────────────────────────── */
+      .main {
+        margin-left: 240px;
+        flex: 1;
+        padding: 2.5rem;
+        min-height: 100vh;
+      }
+
+      .page-header {
+        display: flex; align-items: center; justify-content: space-between;
+        margin-bottom: 2.5rem;
+      }
+      .page-title { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.02em; }
+      .page-subtitle { font-size: 0.85rem; color: rgba(255,255,255,0.38); margin-top: 0.2rem; }
+
+      /* ── CARDS ───────────────────────────────────────── */
+      .card {
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 1.25rem;
+        padding: 1.5rem;
+      }
+
+      .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+      .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1rem; }
+
+      .stat-card {
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 1rem; padding: 1.25rem 1.5rem;
+      }
+      .stat-label { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.09em; color: rgba(255,255,255,0.35); margin-bottom: 0.4rem; }
+      .stat-value { font-size: 1.8rem; font-weight: 800; letter-spacing: -0.03em; }
+      .stat-sub   { font-size: 0.75rem; color: rgba(255,255,255,0.3); margin-top: 0.2rem; }
+
+      /* ── LEVEL CARD ──────────────────────────────────── */
+      .level-card {
+        background: linear-gradient(135deg, rgba(124,92,252,0.15), rgba(167,139,250,0.08));
+        border: 1px solid rgba(167,139,250,0.2);
+        border-radius: 1.25rem; padding: 1.5rem;
+        margin-bottom: 1rem;
+      }
+      .level-name { font-size: 1.1rem; font-weight: 700; color: #c4b5fd; margin-bottom: 0.25rem; }
+      .level-sub  { font-size: 0.78rem; color: rgba(167,139,250,0.6); margin-bottom: 1rem; }
+      .xp-bar { height: 6px; background: rgba(255,255,255,0.08); border-radius: 99px; overflow: hidden; margin-bottom: 0.4rem; }
+      .xp-fill { height: 100%; background: linear-gradient(90deg, #7c5cfc, #a78bfa); border-radius: 99px; transition: width 0.8s cubic-bezier(0.22,1,0.36,1); }
+      .xp-labels { display: flex; justify-content: space-between; font-size: 0.7rem; color: rgba(255,255,255,0.3); }
+
+      /* ── SECTION HEADER ──────────────────────────────── */
+      .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+      .section-title  { font-size: 0.88rem; font-weight: 600; color: rgba(255,255,255,0.65); text-transform: uppercase; letter-spacing: 0.08em; }
+
+      /* ── COMMUNITY FEED ──────────────────────────────── */
+      .feed-post {
+        padding: 1rem 0;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+      }
+      .feed-post:last-child { border-bottom: none; }
+      .feed-meta { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.4rem; }
+      .feed-author { font-size: 0.78rem; font-weight: 600; color: rgba(255,255,255,0.7); }
+      .feed-time   { font-size: 0.72rem; color: rgba(255,255,255,0.25); }
+      .feed-content { font-size: 0.875rem; color: rgba(255,255,255,0.6); line-height: 1.55; }
+      .feed-badge-system {
+        font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
+        color: #a78bfa; background: rgba(167,139,250,0.12);
+        padding: 0.15rem 0.45rem; border-radius: 4px;
+      }
+
+      .post-input-wrap {
+        display: flex; gap: 0.75rem; align-items: flex-start;
+        margin-bottom: 1rem;
+      }
+      .post-input-wrap textarea {
+        flex: 1; padding: 0.75rem 1rem;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 0.9rem; color: #fff;
+        font-family: inherit; font-size: 0.875rem;
+        resize: none; outline: none; min-height: 80px;
+        transition: border-color 0.2s;
+      }
+      .post-input-wrap textarea:focus { border-color: rgba(167,139,250,0.4); }
+      .post-input-wrap textarea::placeholder { color: rgba(255,255,255,0.2); }
+
+      /* ── TOURNAMENTS ─────────────────────────────────── */
+      .tournament-card {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 1rem; padding: 1.25rem;
+        margin-bottom: 0.75rem;
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 1rem;
+      }
+      .tournament-info { flex: 1; }
+      .tournament-title  { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.25rem; }
+      .tournament-meta   { font-size: 0.75rem; color: rgba(255,255,255,0.35); }
+      .status-badge {
+        font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+        padding: 0.25rem 0.6rem; border-radius: 99px;
+      }
+      .status-upcoming  { background: rgba(167,139,250,0.15); color: #a78bfa; }
+      .status-active    { background: rgba(52,211,153,0.15);  color: #34d399; }
+      .status-completed { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.4); }
+
+      /* ── WINNER ROWS ─────────────────────────────────── */
+      .winner-row {
+        display: flex; align-items: center; gap: 1rem;
+        padding: 0.85rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+      }
+      .winner-row:last-child { border-bottom: none; }
+      .winner-pos  { font-size: 0.75rem; font-weight: 700; color: rgba(255,255,255,0.2); width: 24px; }
+      .winner-name { font-size: 0.88rem; font-weight: 600; flex: 1; }
+      .winner-tournament { font-size: 0.75rem; color: rgba(255,255,255,0.35); }
+      .crown { color: #f59e0b; }
+
+      /* ── BUTTONS ─────────────────────────────────────── */
+      .btn {
+        padding: 0.5rem 1.1rem;
+        font-size: 0.82rem; font-family: inherit; font-weight: 600;
+        border: none; border-radius: 0.6rem; cursor: pointer;
+        transition: opacity 0.15s, transform 0.1s;
+      }
+      .btn:hover { opacity: 0.85; }
+      .btn:active { transform: scale(0.97); }
+      .btn-primary { background: linear-gradient(135deg, #7c5cfc, #a78bfa); color: #fff; }
+      .btn-ghost   { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.08); }
+      .btn-sm      { padding: 0.35rem 0.8rem; font-size: 0.75rem; }
+
+      /* ── SECTION VISIBILITY ──────────────────────────── */
+      .section { display: none; }
+      .section.active { display: block; }
+
+      /* ── EMPTY STATE ─────────────────────────────────── */
+      .empty { text-align: center; padding: 2.5rem; color: rgba(255,255,255,0.25); font-size: 0.875rem; }
+
+      /* ── LOADING ─────────────────────────────────────── */
+      .loading { color: rgba(255,255,255,0.25); font-size: 0.85rem; padding: 1rem 0; }
+    </style>
+  </head>
+  <body>
+
+    <!-- ── SIDEBAR ──────────────────────────────────────── -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="dot"></div>
+        <span>Brim Community</span>
+      </div>
+
+      <span class="nav-section">Hoved</span>
+      <div class="nav-item active" data-section="dashboard">
+        <span class="icon">⊞</span> Dashboard
+      </div>
+      <div class="nav-item" data-section="profil">
+        <span class="icon">◎</span> Profil
+      </div>
+      <div class="nav-item" data-section="community">
+        <span class="icon">◈</span> Community
+      </div>
+
+      <span class="nav-section">Konkurranser</span>
+      <div class="nav-item" data-section="turneringer">
+        <span class="icon">⚡</span> Turneringer
+      </div>
+      <div class="nav-item" data-section="vinnere">
+        <span class="icon">★</span> Hall of Fame
+      </div>
+
+      <div class="sidebar-bottom">
+        <div class="sidebar-user">
+          <div class="avatar" id="sidebarAvatar">?</div>
+          <div class="user-info">
+            <div class="user-name" id="sidebarName">Laster…</div>
+            <div class="user-level" id="sidebarLevel">—</div>
+          </div>
+        </div>
+        <div class="nav-item" id="logoutBtn" style="margin-top:0.75rem; color:rgba(248,113,113,0.6);">
+          <span class="icon">→</span> Logg ut
+        </div>
+      </div>
+    </aside>
+
+    <!-- ── MAIN ─────────────────────────────────────────── -->
+    <main class="main">
+
+      <!-- DASHBOARD -->
+      <div class="section active" id="sec-dashboard">
+        <div class="page-header">
+          <div>
+            <div class="page-title" id="welcomeTitle">Hei, —</div>
+            <div class="page-subtitle">Her er en oversikt over din aktivitet og fellesskapet.</div>
+          </div>
+        </div>
+
+        <!-- Level card -->
+        <div class="level-card">
+          <div class="level-name" id="levelName">—</div>
+          <div class="level-sub" id="levelSub">Grad 1 av 7</div>
+          <div class="xp-bar"><div class="xp-fill" id="xpFill" style="width:0%"></div></div>
+          <div class="xp-labels">
+            <span id="xpCur">0 XP</span>
+            <span id="xpNext">Neste: 100 XP</span>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="grid-3">
+          <div class="stat-card">
+            <div class="stat-label">Totale Medlemmer</div>
+            <div class="stat-value" id="statMembers">—</div>
+            <div class="stat-sub">av 200 mål</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Ditt XP</div>
+            <div class="stat-value" id="statXP">0</div>
+            <div class="stat-sub">erfaringspoeng</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Innmeldt</div>
+            <div class="stat-value" id="statJoined" style="font-size:1.1rem; padding-top:0.4rem;">—</div>
+            <div class="stat-sub">dato</div>
+          </div>
+        </div>
+
+        <!-- Recent community preview -->
+        <div class="card" style="margin-bottom:1rem;">
+          <div class="section-header">
+            <span class="section-title">Siste i Community</span>
+            <button class="btn btn-ghost btn-sm" onclick="showSection('community')">Se alle</button>
+          </div>
+          <div id="dashFeed"><div class="loading">Laster…</div></div>
+        </div>
+
+        <!-- Upcoming tournaments preview -->
+        <div class="card">
+          <div class="section-header">
+            <span class="section-title">Kommende turneringer</span>
+            <button class="btn btn-ghost btn-sm" onclick="showSection('turneringer')">Se alle</button>
+          </div>
+          <div id="dashTournaments"><div class="loading">Laster…</div></div>
+        </div>
+      </div>
+
+      <!-- PROFIL -->
+      <div class="section" id="sec-profil">
+        <div class="page-header">
+          <div><div class="page-title">Profil</div><div class="page-subtitle">Din medlemsinformasjon</div></div>
+        </div>
+        <div class="card">
+          <div id="profileContent"><div class="loading">Laster…</div></div>
+        </div>
+      </div>
+
+      <!-- COMMUNITY -->
+      <div class="section" id="sec-community">
+        <div class="page-header">
+          <div><div class="page-title">Community</div><div class="page-subtitle">Del, følg med og vær en del av fellesskapet</div></div>
+        </div>
+
+        <div class="card" style="margin-bottom:1rem;">
+          <div class="post-input-wrap">
+            <textarea id="postContent" placeholder="Del noe med fellesskapet…"></textarea>
+          </div>
+          <div style="text-align:right;">
+            <button class="btn btn-primary" id="postBtn">Publiser</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div id="communityFeed"><div class="loading">Laster…</div></div>
+        </div>
+      </div>
+
+      <!-- TURNERINGER -->
+      <div class="section" id="sec-turneringer">
+        <div class="page-header">
+          <div><div class="page-title">Turneringer</div><div class="page-subtitle">Delta og kjemp deg til toppen</div></div>
+        </div>
+        <div id="tournamentList"><div class="loading">Laster…</div></div>
+      </div>
+
+      <!-- HALL OF FAME -->
+      <div class="section" id="sec-vinnere">
+        <div class="page-header">
+          <div><div class="page-title">Hall of Fame</div><div class="page-subtitle">Tidligere turneringsvinnere</div></div>
+        </div>
+        <div class="card">
+          <div id="winnerList"><div class="loading">Laster…</div></div>
+        </div>
+      </div>
+
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script src="js/brim.js"></script>
+    <script>
+      let currentMember = null;
+      let currentSession = null;
+
+      // ── NAVIGATION ───────────────────────────────────────
+      function showSection(name) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        document.getElementById('sec-' + name).classList.add('active');
+        document.querySelector(`[data-section="${name}"]`)?.classList.add('active');
+        if (name === 'community')  loadCommunityFeed();
+        if (name === 'turneringer') loadTournaments();
+        if (name === 'vinnere')    loadWinners();
+        if (name === 'profil')     renderProfile();
+      }
+
+      document.querySelectorAll('.nav-item[data-section]').forEach(el => {
+        el.addEventListener('click', () => showSection(el.dataset.section));
+      });
+
+      // ── LOGOUT ───────────────────────────────────────────
+      document.getElementById('logoutBtn').addEventListener('click', async () => {
+        await db.auth.signOut();
+        window.location.href = 'login.html';
+      });
+
+      // ── INIT ─────────────────────────────────────────────
+      async function init() {
+        currentSession = await requireAuth();
+        if (!currentSession) return;
+
+        currentMember = await getMember(currentSession.user.id);
+
+        // Sidebar user info
+        const initials = currentMember?.name?.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase() || '?';
+        document.getElementById('sidebarAvatar').textContent = initials;
+        document.getElementById('sidebarName').textContent   = currentMember?.name || '—';
+
+        const lvl = getLevelFromXP(currentMember?.xp || 0);
+        document.getElementById('sidebarLevel').textContent = lvl.name;
+
+        // Welcome title
+        document.getElementById('welcomeTitle').textContent = `Hei, ${currentMember?.name?.split(' ')[0] || ''}`;
+
+        // Level card
+        const xp    = currentMember?.xp || 0;
+        const next  = getNextLevel(xp);
+        const pct   = xpProgress(xp);
+        document.getElementById('levelName').textContent = lvl.name;
+        document.getElementById('levelSub').textContent  = `Grad ${lvl.id} av 7`;
+        document.getElementById('xpFill').style.width    = pct + '%';
+        document.getElementById('xpCur').textContent     = xp + ' XP';
+        document.getElementById('xpNext').textContent    = next ? `Neste: ${next.xp} XP` : 'Maks nivå';
+
+        // Stats
+        document.getElementById('statXP').textContent     = xp;
+        document.getElementById('statJoined').textContent = currentMember?.join_date
+          ? new Date(currentMember.join_date).toLocaleDateString('no-NO') : '—';
+
+        // Member count
+        const { count } = await db.from('members').select('*', { count: 'exact', head: true });
+        document.getElementById('statMembers').textContent = count || '—';
+
+        // Load dashboard previews
+        loadDashFeed();
+        loadDashTournaments();
+      }
+
+      // ── DASHBOARD FEED PREVIEW ────────────────────────────
+      async function loadDashFeed() {
+        const { data } = await db
+          .from('community_posts')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(3);
+
+        const el = document.getElementById('dashFeed');
+        if (!data?.length) { el.innerHTML = '<div class="empty">Ingen innlegg ennå.</div>'; return; }
+        el.innerHTML = data.map(p => renderPost(p)).join('');
+      }
+
+      // ── DASHBOARD TOURNAMENTS PREVIEW ─────────────────────
+      async function loadDashTournaments() {
+        const { data } = await db
+          .from('tournaments')
+          .select('*')
+          .in('status', ['upcoming', 'active'])
+          .order('created_at', { ascending: false })
+          .limit(2);
+
+        const el = document.getElementById('dashTournaments');
+        if (!data?.length) { el.innerHTML = '<div class="empty">Ingen kommende turneringer.</div>'; return; }
+        el.innerHTML = data.map(t => renderTournamentRow(t, false)).join('');
+      }
+
+      // ── COMMUNITY FEED ────────────────────────────────────
+      async function loadCommunityFeed() {
+        const { data } = await db
+          .from('community_posts')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(30);
+
+        const el = document.getElementById('communityFeed');
+        if (!data?.length) { el.innerHTML = '<div class="empty">Ingen innlegg ennå. Vær den første!</div>'; return; }
+        el.innerHTML = data.map(p => renderPost(p)).join('');
+      }
+
+      function renderPost(p) {
+        const badge = p.type === 'system' || p.type === 'welcome'
+          ? '<span class="feed-badge-system">System</span>' : '';
+        return `
+          <div class="feed-post">
+            <div class="feed-meta">
+              <span class="feed-author">${p.author_name || 'Brim Community'}</span>
+              ${badge}
+              <span class="feed-time">${timeAgo(p.created_at)}</span>
+            </div>
+            <div class="feed-content">${p.content}</div>
+          </div>`;
+      }
+
+      document.getElementById('postBtn').addEventListener('click', async () => {
+        const content = document.getElementById('postContent').value.trim();
+        if (!content) return;
+
+        const btn = document.getElementById('postBtn');
+        btn.disabled = true; btn.textContent = 'Sender…';
+
+        await db.from('community_posts').insert({
+          author_id:   currentSession.user.id,
+          author_name: currentMember?.name || 'Ukjent',
+          content,
+          type:        'post',
+        });
+
+        document.getElementById('postContent').value = '';
+        btn.disabled = false; btn.textContent = 'Publiser';
+        loadCommunityFeed();
+      });
+
+      // ── TOURNAMENTS ───────────────────────────────────────
+      async function loadTournaments() {
+        const { data } = await db.from('tournaments').select('*').order('created_at', { ascending: false });
+        const el = document.getElementById('tournamentList');
+        if (!data?.length) { el.innerHTML = '<div class="empty">Ingen turneringer ennå.</div>'; return; }
+        el.innerHTML = data.map(t => renderTournamentRow(t, true)).join('');
+      }
+
+      function renderTournamentRow(t, showJoin) {
+        const badge = { upcoming: 'status-upcoming', active: 'status-active', completed: 'status-completed' }[t.status] || '';
+        const label = { upcoming: 'Kommende', active: 'Aktiv', completed: 'Avsluttet' }[t.status] || t.status;
+        const joinBtn = showJoin && t.status !== 'completed'
+          ? `<button class="btn btn-primary btn-sm" onclick="joinTournament(${t.id})">Delta</button>` : '';
+        const dates = t.start_date ? `${new Date(t.start_date).toLocaleDateString('no-NO')}` : '';
+        return `
+          <div class="tournament-card">
+            <div class="tournament-info">
+              <div class="tournament-title">${t.title}</div>
+              <div class="tournament-meta">${t.description || ''} ${dates ? '· ' + dates : ''}</div>
+            </div>
+            <span class="status-badge ${badge}">${label}</span>
+            ${joinBtn}
+          </div>`;
+      }
+
+      async function joinTournament(tournamentId) {
+        const { error } = await db.from('tournament_participants').insert({
+          tournament_id: tournamentId,
+          user_id:       currentSession.user.id,
+          member_name:   currentMember?.name,
+        });
+        if (!error) alert('Du er nå påmeldt turneringen!');
+        else        alert('Du er allerede påmeldt, eller noe gikk galt.');
+      }
+
+      // ── WINNERS ───────────────────────────────────────────
+      async function loadWinners() {
+        const { data } = await db
+          .from('tournament_results')
+          .select('*, tournaments(title)')
+          .order('created_at', { ascending: false })
+          .limit(20);
+
+        const el = document.getElementById('winnerList');
+        if (!data?.length) { el.innerHTML = '<div class="empty">Ingen vinnere registrert ennå.</div>'; return; }
+        el.innerHTML = data.map((w, i) => `
+          <div class="winner-row">
+            <div class="winner-pos">${w.position === 1 ? '<span class="crown">★</span>' : '#' + w.position}</div>
+            <div class="winner-name">${w.winner_name}</div>
+            <div class="winner-tournament">${w.tournaments?.title || '—'}</div>
+          </div>`).join('');
+      }
+
+      // ── PROFILE ───────────────────────────────────────────
+      function renderProfile() {
+        const m = currentMember;
+        if (!m) return;
+        const fields = [
+          ['Fullt navn',     m.name],
+          ['Telefonnummer',  m.phone],
+          ['E-postadresse',  m.email || '—'],
+          ['Kommune',        m.municipality],
+          ['Innmeldt',       m.join_date ? new Date(m.join_date).toLocaleDateString('no-NO') : '—'],
+          ['Status',         m.role === 'admin' ? 'Admin' : 'Aktiv'],
+          ['Nivå',           getLevelFromXP(m.xp || 0).name],
+          ['XP',             (m.xp || 0) + ' poeng'],
+        ];
+        document.getElementById('profileContent').innerHTML = fields.map(([label, val]) => `
+          <div style="display:flex; justify-content:space-between; padding:0.9rem 0; border-bottom:1px solid rgba(255,255,255,0.05);">
+            <span style="font-size:0.78rem; text-transform:uppercase; letter-spacing:0.08em; color:rgba(255,255,255,0.35); font-weight:600;">${label}</span>
+            <span style="font-size:0.88rem; color:rgba(255,255,255,0.75); font-weight:500;">${val}</span>
+          </div>`).join('');
+      }
+
+      init();
+    </script>
+  </body>
+</html>

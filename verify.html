@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="no">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Brim — Bekreft kode</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      html, body { height: 100%; }
+
+      body {
+        font-family: 'Inter', system-ui, sans-serif;
+        min-height: 100vh;
+        display: flex; align-items: center; justify-content: center;
+        padding: 2rem 1.25rem;
+        background: #080810;
+        position: relative; overflow: hidden;
+      }
+
+      .bg-video-wrap { position: fixed; inset: 0; z-index: 0; }
+      .bg-video-wrap video {
+        position: absolute; inset: 0; width: 100%; height: 100%;
+        object-fit: cover; opacity: 0; transition: opacity 1.4s ease-in-out; transform: scale(1.05);
+      }
+      .bg-video-wrap video.active { opacity: 1; }
+      .bg-overlay {
+        position: fixed; inset: 0; z-index: 1; pointer-events: none;
+        background:
+          radial-gradient(ellipse 55% 65% at 50% 50%, rgba(8,8,18,0.75) 0%, rgba(8,8,18,0.55) 60%, rgba(8,8,18,0.35) 100%),
+          linear-gradient(180deg, rgba(8,8,18,0.5) 0%, rgba(8,8,18,0.6) 100%);
+      }
+
+      .card {
+        position: relative; z-index: 2;
+        width: min(420px, 100%);
+        background: rgba(12,12,22,0.82);
+        border: 1px solid rgba(255,255,255,0.09);
+        border-radius: 1.75rem; padding: 3rem 2.75rem;
+        backdrop-filter: blur(32px); -webkit-backdrop-filter: blur(32px);
+        box-shadow: 0 0 0 1px rgba(255,255,255,0.03), 0 40px 100px rgba(0,0,0,0.65);
+        animation: rise 0.65s cubic-bezier(0.22,1,0.36,1) both;
+      }
+      @keyframes rise { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
+      .card::before {
+        content: ''; position: absolute; top: 0; left: 15%; right: 15%; height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(140,100,255,0.55), transparent);
+      }
+
+      .brand { display: flex; align-items: center; gap: 0.55rem; margin-bottom: 2.25rem; }
+      .brand-dot {
+        width: 10px; height: 10px; border-radius: 50%;
+        background: linear-gradient(135deg, #a78bfa, #c4b5fd);
+        box-shadow: 0 0 10px rgba(167,139,250,0.55);
+      }
+      .brand-label { font-size: 0.78rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.45); }
+
+      h1 { font-size: 1.85rem; font-weight: 700; color: #fff; letter-spacing: -0.025em; margin-bottom: 0.5rem; }
+      .subtitle { font-size: 0.88rem; color: rgba(255,255,255,0.38); margin-bottom: 2rem; line-height: 1.6; }
+      .phone-display {
+        display: inline-block; font-size: 0.82rem; font-weight: 600;
+        color: #a78bfa; background: rgba(167,139,250,0.1);
+        border: 1px solid rgba(167,139,250,0.2); border-radius: 0.5rem;
+        padding: 0.2rem 0.6rem; margin-bottom: 1.5rem;
+      }
+      .divider { height: 1px; background: rgba(255,255,255,0.06); margin-bottom: 2rem; }
+
+      /* OTP input group */
+      .otp-group {
+        display: flex; gap: 0.6rem; justify-content: center; margin-bottom: 1.5rem;
+      }
+      .otp-group input {
+        width: 48px; height: 58px;
+        text-align: center; font-size: 1.4rem; font-weight: 700;
+        background: rgba(255,255,255,0.045);
+        border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 0.8rem; color: #fff; outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        caret-color: #a78bfa;
+      }
+      .otp-group input:focus {
+        border-color: rgba(167,139,250,0.6);
+        box-shadow: 0 0 0 3px rgba(167,139,250,0.12);
+      }
+      .otp-group input.filled { border-color: rgba(167,139,250,0.4); }
+      .otp-group.error input { border-color: rgba(248,113,113,0.6); }
+
+      .error-msg { font-size: 0.78rem; color: rgba(248,113,113,0.9); text-align: center; margin-bottom: 1rem; display: none; }
+      .error-msg.visible { display: block; }
+
+      button {
+        width: 100%; padding: 0.9rem;
+        font-size: 0.95rem; font-family: inherit; font-weight: 600;
+        border: none; border-radius: 0.9rem; cursor: pointer;
+        background: linear-gradient(135deg, #7c5cfc, #a78bfa); color: #fff;
+        transition: transform 0.15s, box-shadow 0.2s, opacity 0.15s;
+        box-shadow: 0 4px 20px rgba(124,92,252,0.35);
+      }
+      button:hover { transform: translateY(-1px); box-shadow: 0 8px 28px rgba(124,92,252,0.48); }
+      button:active { transform: translateY(1px); }
+      button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+      .resend { text-align: center; margin-top: 1.4rem; font-size: 0.78rem; color: rgba(255,255,255,0.28); }
+      .resend button.link-btn {
+        background: none; border: none; padding: 0; color: rgba(167,139,250,0.8);
+        font-size: inherit; font-family: inherit; cursor: pointer;
+        width: auto; box-shadow: none; font-weight: 500;
+      }
+      .resend button.link-btn:hover { color: #a78bfa; }
+    </style>
+  </head>
+  <body>
+    <div class="bg-video-wrap" id="bgWrap">
+      <video class="active" src="video-1.mp4" muted playsinline preload="auto"></video>
+      <video src="video-2.mp4" muted playsinline preload="auto"></video>
+      <video src="video-3.mp4" muted playsinline preload="auto"></video>
+      <video src="video-4.mp4" muted playsinline preload="auto"></video>
+    </div>
+    <div class="bg-overlay"></div>
+
+    <main class="card">
+      <div class="brand">
+        <div class="brand-dot"></div>
+        <span class="brand-label">Brim Community</span>
+      </div>
+
+      <h1>Bekreft koden.</h1>
+      <p class="subtitle">Vi sendte en 6-sifret kode til</p>
+      <span class="phone-display" id="phoneDisplay">—</span>
+      <div class="divider"></div>
+
+      <form id="verifyForm" novalidate>
+        <div class="otp-group" id="otpGroup">
+          <input type="text" inputmode="numeric" maxlength="1" class="otp-input" />
+          <input type="text" inputmode="numeric" maxlength="1" class="otp-input" />
+          <input type="text" inputmode="numeric" maxlength="1" class="otp-input" />
+          <input type="text" inputmode="numeric" maxlength="1" class="otp-input" />
+          <input type="text" inputmode="numeric" maxlength="1" class="otp-input" />
+          <input type="text" inputmode="numeric" maxlength="1" class="otp-input" />
+        </div>
+        <span class="error-msg" id="err-otp">Feil kode. Prøv igjen.</span>
+        <button type="submit" id="verifyBtn">Bekreft</button>
+      </form>
+
+      <div class="resend">
+        Fikk du ikke koden? <button class="link-btn" id="resendBtn">Send på nytt</button>
+      </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script src="js/brim.js"></script>
+    <script>
+      // Video montage
+      (function () {
+        const videos = Array.from(document.getElementById('bgWrap').querySelectorAll('video'));
+        let current = 0;
+        videos.forEach(v => { v.loop = true; v.play().catch(() => {}); });
+        setInterval(() => {
+          const prev = current;
+          current = (current + 1) % videos.length;
+          videos[current].classList.add('active');
+          setTimeout(() => videos[prev].classList.remove('active'), 1400);
+        }, 5500);
+      })();
+
+      const phone = sessionStorage.getItem('brim_phone');
+      const flow  = sessionStorage.getItem('brim_flow');
+      if (!phone) window.location.href = 'login.html';
+
+      document.getElementById('phoneDisplay').textContent = phone;
+
+      // ── OTP INPUT NAVIGATION ─────────────────────────────
+      const inputs = Array.from(document.querySelectorAll('.otp-input'));
+
+      inputs.forEach((inp, i) => {
+        inp.addEventListener('input', () => {
+          inp.value = inp.value.replace(/\D/g, '').slice(-1);
+          inp.classList.toggle('filled', inp.value !== '');
+          if (inp.value && i < inputs.length - 1) inputs[i + 1].focus();
+        });
+
+        inp.addEventListener('keydown', e => {
+          if (e.key === 'Backspace' && !inp.value && i > 0) {
+            inputs[i - 1].focus();
+            inputs[i - 1].value = '';
+            inputs[i - 1].classList.remove('filled');
+          }
+        });
+
+        inp.addEventListener('paste', e => {
+          e.preventDefault();
+          const pasted = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '').slice(0, 6);
+          pasted.split('').forEach((ch, j) => {
+            if (inputs[j]) { inputs[j].value = ch; inputs[j].classList.add('filled'); }
+          });
+          const last = Math.min(pasted.length, inputs.length - 1);
+          inputs[last].focus();
+        });
+      });
+
+      inputs[0].focus();
+
+      // ── VERIFY ───────────────────────────────────────────
+      document.getElementById('verifyForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const token = inputs.map(i => i.value).join('');
+        const errEl = document.getElementById('err-otp');
+        const group = document.getElementById('otpGroup');
+
+        if (token.length < 6) {
+          group.classList.add('error');
+          errEl.classList.add('visible');
+          errEl.textContent = 'Fyll inn alle 6 sifrene.';
+          return;
+        }
+
+        const btn = document.getElementById('verifyBtn');
+        btn.disabled = true; btn.textContent = 'Bekrefter…';
+        group.classList.remove('error');
+        errEl.classList.remove('visible');
+
+        const { data, error } = await db.auth.verifyOtp({ phone, token, type: 'sms' });
+
+        if (error) {
+          group.classList.add('error');
+          errEl.textContent = 'Feil kode. Prøv igjen.';
+          errEl.classList.add('visible');
+          btn.disabled = false; btn.textContent = 'Bekreft';
+          return;
+        }
+
+        // If registration flow: create member record
+        if (flow === 'register') {
+          const reg = JSON.parse(sessionStorage.getItem('brim_reg') || '{}');
+          const userId = data.user.id;
+
+          // Check if member record already exists (avoid duplicates)
+          const { data: existing } = await db.from('members').select('id').eq('user_id', userId).single();
+
+          if (!existing) {
+            await db.from('members').insert({
+              ...reg,
+              user_id:  userId,
+              verified: true,
+              role:     'member',
+              xp:       0,
+              level_id: 1,
+            });
+
+            // Post welcome message to community
+            await postSystemMessage(`🎉 Et nytt medlem har ankommet fellesskapet — velkommen, ${reg.name}!`);
+          }
+        }
+
+        // Clean up sessionStorage
+        sessionStorage.removeItem('brim_flow');
+        sessionStorage.removeItem('brim_phone');
+        sessionStorage.removeItem('brim_reg');
+
+        window.location.href = 'dashboard.html';
+      });
+
+      // ── RESEND ───────────────────────────────────────────
+      document.getElementById('resendBtn').addEventListener('click', async function () {
+        this.disabled = true; this.textContent = 'Sender…';
+        await db.auth.signInWithOtp({ phone });
+        setTimeout(() => { this.disabled = false; this.textContent = 'Send på nytt'; }, 30000);
+        this.textContent = 'Sendt!';
+      });
+    </script>
+  </body>
+</html>
