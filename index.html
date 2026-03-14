@@ -241,6 +241,53 @@
         color: rgba(255,255,255,0.18);
         letter-spacing: 0.02em;
       }
+
+      /* ── COUNTER / PROGRESS ────────────────────────────── */
+      .counter-section {
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(255,255,255,0.06);
+      }
+
+      .counter-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 0.7rem;
+      }
+
+      .counter-label {
+        font-size: 0.74rem;
+        font-weight: 600;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.32);
+      }
+
+      .counter-numbers {
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: rgba(255,255,255,0.55);
+      }
+
+      .counter-numbers span {
+        color: #a78bfa;
+      }
+
+      .progress-track {
+        height: 5px;
+        background: rgba(255,255,255,0.07);
+        border-radius: 99px;
+        overflow: hidden;
+      }
+
+      .progress-fill {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #7c5cfc, #a78bfa);
+        border-radius: 99px;
+        transition: width 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+      }
     </style>
   </head>
   <body>
@@ -310,10 +357,23 @@
         <button type="submit">Bli medlem</button>
       </form>
 
+      <!-- ── COUNTER ──────────────────────────────────────── -->
+      <div class="counter-section">
+        <div class="counter-header">
+          <span class="counter-label">Medlemmer</span>
+          <span class="counter-numbers"><span id="countNum">–</span> / 200</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </div>
+
       <p class="footer-note">© 2026 Brim Community — All rights reserved.</p>
     </main>
 
     <script>
+      const GOAL = 200;
+
       /* ── VIDEO MONTAGE ─────────────────────────────────── */
       (function () {
         const wrap    = document.getElementById('bgWrap');
@@ -334,8 +394,28 @@
         setInterval(next, HOLD);
       })();
 
+      /* ── COUNTER ───────────────────────────────────────── */
+      function setCounter(antall) {
+        document.getElementById('countNum').textContent = antall;
+        const pct = Math.min((antall / GOAL) * 100, 100);
+        document.getElementById('progressFill').style.width = pct + '%';
+      }
+
+      async function fetchCount() {
+        try {
+          const res  = await fetch('/api/members/count');
+          const data = await res.json();
+          setCounter(data.antall);
+        } catch (_) {
+          // server not reachable — hide counter gracefully
+          document.getElementById('countNum').textContent = '–';
+        }
+      }
+
+      fetchCount(); // run on page load
+
       /* ── FORM SUBMIT ───────────────────────────────────── */
-      document.getElementById('regForm').addEventListener('submit', function (e) {
+      document.getElementById('regForm').addEventListener('submit', async function (e) {
         e.preventDefault();
 
         const navn    = document.getElementById('fullName').value.trim();
@@ -348,20 +428,38 @@
           return;
         }
 
-        const payload = {
-          navn,
-          telefon,
-          e_post:           document.getElementById('email').value.trim(),
-          kommune,
-          ønsker_medlemskap: true,
-          innmeldingsdato:  new Date().toISOString().slice(0, 10) // YYYY-MM-DD
-        };
+        const btn = this.querySelector('button[type="submit"]');
+        btn.disabled    = true;
+        btn.textContent = 'Sender…';
 
-        // TODO: send payload to your backend / database here
-        console.log('Registrering:', payload);
+        try {
+          const res  = await fetch('/api/members', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({
+              navn,
+              telefon,
+              e_post:            document.getElementById('email').value.trim(),
+              kommune,
+              ønsker_medlemskap: true
+            })
+          });
 
-        alert('Takk, ' + navn + '! Registreringen din er mottatt.');
-        this.reset();
+          const data = await res.json();
+
+          if (!res.ok) {
+            alert(data.error || 'Noe gikk galt. Prøv igjen.');
+          } else {
+            setCounter(data.antall);
+            alert('Takk, ' + navn + '! Registreringen din er mottatt.');
+            this.reset();
+          }
+        } catch (_) {
+          alert('Kunne ikke nå serveren. Sjekk at backend kjører.');
+        } finally {
+          btn.disabled    = false;
+          btn.textContent = 'Bli medlem';
+        }
       });
     </script>
   </body>
