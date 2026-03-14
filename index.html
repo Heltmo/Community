@@ -342,6 +342,12 @@
           <input type="email" id="email" name="e_post" placeholder="din@epost.no" autocomplete="email" />
         </div>
 
+        <!-- Fødselsdato -->
+        <div class="field">
+          <label for="birthdate">Fødselsdato</label>
+          <input type="date" id="birthdate" name="birthdate" required />
+        </div>
+
         <!-- Kommune -->
         <div class="field">
           <label for="kommune">Kommune</label>
@@ -427,10 +433,11 @@
 
         const name         = document.getElementById('fullName').value.trim();
         const phone        = document.getElementById('phoneNumber').value.trim();
+        const birthdate    = document.getElementById('birthdate').value;
         const municipality = document.getElementById('kommune').value.trim();
         const bekreft      = document.getElementById('bekreft').checked;
 
-        if (!name || !phone || !municipality || !bekreft) {
+        if (!name || !phone || !birthdate || !municipality || !bekreft) {
           alert('Vennligst fyll ut alle obligatoriske felt og bekreft medlemskap.');
           return;
         }
@@ -443,6 +450,7 @@
           name,
           phone,
           email:            document.getElementById('email').value.trim() || null,
+          birthdate,
           municipality,
           wants_membership: true,
           join_date:        new Date().toISOString().slice(0, 10)
