@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="no">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Brim — Logger inn…</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      html, body { height: 100%; }
+
+      body {
+        font-family: 'Inter', system-ui, sans-serif;
+        min-height: 100vh;
+        background: #080810;
+        display: flex; align-items: center; justify-content: center;
+        color: #fff;
+      }
+
+      .wrap { text-align: center; }
+
+      .spinner {
+        width: 44px; height: 44px; border-radius: 50%;
+        border: 3px solid rgba(167,139,250,0.15);
+        border-top-color: #a78bfa;
+        animation: spin 0.75s linear infinite;
+        margin: 0 auto 1.5rem;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+
+      .label { font-size: 0.9rem; color: rgba(255,255,255,0.4); }
+      .error-wrap { display: none; margin-top: 1rem; }
+      .error-wrap p { font-size: 0.85rem; color: rgba(248,113,113,0.8); margin-bottom: 0.75rem; }
+      .error-wrap a { color: #a78bfa; font-size: 0.85rem; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="spinner"></div>
+      <p class="label">Logger inn…</p>
+      <div class="error-wrap" id="errWrap">
+        <p id="errMsg">Noe gikk galt. Lenken kan ha utløpt.</p>
+        <a href="login.html">← Prøv igjen</a>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script src="js/brim.js"></script>
+    <script>
+      async function handleCallback() {
+        // Supabase auto-processes the URL hash (#access_token=...) on getSession()
+        const { data: { session }, error } = await db.auth.getSession();
+
+        if (error || !session) {
+          document.getElementById('errWrap').style.display = 'block';
+          document.getElementById('errMsg').textContent =
+            error?.message || 'Lenken er ugyldig eller har utløpt.';
+          return;
+        }
+
+        const userId = session.user.id;
+        const email  = session.user.email;
+
+        // Check if member record already exists
+        const existing = await getMember(userId);
+
+        if (!existing) {
+          // Look for pending registration data saved by index.html
+          const pendingKey  = 'brim_reg_' + email;
+          const pendingData = localStorage.getItem(pendingKey);
+
+          if (pendingData) {
+            const reg = JSON.parse(pendingData);
+
+            await db.from('members').insert({
+              user_id:          userId,
+              name:             reg.name,
+              phone:            reg.phone,
+              email:            reg.email,
+              birthdate:        reg.birthdate,
+              municipality:     reg.municipality,
+              wants_membership: true,
+              join_date:        reg.join_date || new Date().toISOString().slice(0, 10),
+              verified:         true,
+              role:             'member',
+              xp:               0,
+              level_id:         1,
+            });
+
+            // Welcome message in community feed
+            await postSystemMessage(
+              `🎉 Et nytt medlem har ankommet fellesskapet — velkommen, ${reg.name}!`
+            );
+
+            localStorage.removeItem(pendingKey);
+          }
+          // If no pending data: user is a returning auth user without a member record yet
+          // (edge case — they will land on dashboard with minimal profile)
+        }
+
+        window.location.href = 'dashboard.html';
+      }
+
+      handleCallback();
+    </script>
+  </body>
+</html>

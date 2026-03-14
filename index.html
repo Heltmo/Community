@@ -379,7 +379,7 @@
           <span class="error-msg" id="err-phoneNumber">Telefonnummer er påkrevd.</span>
         </div>
 
-        <!-- E-postadresse -->
+        <!-- E-postadresse (required — used for login) -->
         <div class="field">
           <label for="email">E-postadresse</label>
           <input type="email" id="email" name="e_post" placeholder="din@epost.no" autocomplete="email" />
@@ -516,43 +516,51 @@
         fieldError('kommune',     'err-kommune',      !municipality);
         checkboxError(!bekreft);
 
-        // E-post: only validate format if user typed something
-        const emailBad = emailVal && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal);
-        fieldError('email', 'err-email', emailBad);
+        // Email is required for magic link auth
+        const emailMissing = !emailVal || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal);
+        fieldError('email', 'err-email', emailMissing);
+        if (emailMissing) {
+          document.getElementById('err-email').textContent = emailVal
+            ? 'Oppgi en gyldig e-postadresse.'
+            : 'E-postadresse er påkrevd for innlogging.';
+        }
 
-        if (!name || !phone || !birthdate || !municipality || !bekreft || emailBad) return;
+        if (!name || !phone || !birthdate || !municipality || !bekreft || emailMissing) return;
 
         const btn = this.querySelector('button[type="submit"]');
         btn.disabled    = true;
-        btn.textContent = 'Sender kode…';
+        btn.textContent = 'Sender lenke…';
 
-        // Format phone for Supabase (E.164)
-        const formattedPhone = formatPhone(phone);
+        // ── AUTH METHOD: email magic link (switch to phone OTP later) ──
+        const redirectTo = window.location.origin
+          + window.location.pathname.replace(/\/[^/]*$/, '/')
+          + 'auth-callback.html';
 
-        // Send OTP via Supabase phone auth
-        const { error: otpError } = await db.auth.signInWithOtp({ phone: formattedPhone });
+        const { error: authError } = await db.auth.signInWithOtp({
+          email: emailVal,
+          options: { emailRedirectTo: redirectTo }
+        });
 
-        if (otpError) {
-          alert('Kunne ikke sende kode: ' + otpError.message);
+        if (authError) {
+          alert('Kunne ikke sende innloggingslenke: ' + authError.message);
           btn.disabled    = false;
           btn.textContent = 'Bli medlem';
           return;
         }
 
-        // Store registration data for after OTP verification
-        sessionStorage.setItem('brim_flow',         'register');
-        sessionStorage.setItem('brim_phone',         formattedPhone);
-        sessionStorage.setItem('brim_reg', JSON.stringify({
+        // Store registration data in localStorage (survives tab/email client)
+        // Key by email so auth-callback can match it
+        localStorage.setItem('brim_reg_' + emailVal, JSON.stringify({
           name,
-          phone:            formattedPhone,
-          email:            document.getElementById('email').value.trim() || null,
+          phone,
+          email:            emailVal,
           birthdate,
           municipality,
           wants_membership: true,
           join_date:        new Date().toISOString().slice(0, 10)
         }));
 
-        window.location.href = 'verify.html';
+        window.location.href = 'check-email.html?email=' + encodeURIComponent(emailVal);
       });
     </script>
   </body>

@@ -131,16 +131,16 @@
       </div>
 
       <h1>Logg inn</h1>
-      <p class="subtitle">Skriv inn ditt telefonnummer for å motta en engangskode.</p>
+      <p class="subtitle">Skriv inn e-postadressen din for å motta en innloggingslenke.</p>
       <div class="divider"></div>
 
       <form id="loginForm" novalidate>
         <div class="field">
-          <label for="phone">Telefonnummer</label>
-          <input type="tel" id="phone" placeholder="+47 000 00 000" autocomplete="tel" />
-          <span class="error-msg" id="err-phone">Oppgi et gyldig telefonnummer.</span>
+          <label for="email">E-postadresse</label>
+          <input type="email" id="email" placeholder="din@epost.no" autocomplete="email" />
+          <span class="error-msg" id="err-email">Oppgi en gyldig e-postadresse.</span>
         </div>
-        <button type="submit">Send kode</button>
+        <button type="submit">Send innloggingslenke</button>
       </form>
 
       <p class="footer-note">Ikke medlem ennå? <a href="index.html">Registrer deg</a></p>
@@ -168,30 +168,34 @@
       document.getElementById('loginForm').addEventListener('submit', async function (e) {
         e.preventDefault();
 
-        const raw = document.getElementById('phone').value.trim();
-        const phone = formatPhone(raw);
-
-        const phoneEl  = document.getElementById('phone');
-        const errPhone = document.getElementById('err-phone');
-        const invalid  = !raw || phone.length < 10;
-        phoneEl.classList.toggle('error', invalid);
-        errPhone.classList.toggle('visible', invalid);
+        const email   = document.getElementById('email').value.trim();
+        const emailEl = document.getElementById('email');
+        const errEl   = document.getElementById('err-email');
+        const invalid = !email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        emailEl.classList.toggle('error', invalid);
+        errEl.classList.toggle('visible', invalid);
         if (invalid) return;
 
         const btn = this.querySelector('button');
         btn.disabled = true; btn.textContent = 'Sender…';
 
-        const { error } = await db.auth.signInWithOtp({ phone });
+        // ── AUTH METHOD: email magic link ──────────────────────
+        const redirectTo = window.location.origin
+          + window.location.pathname.replace(/\/[^/]*$/, '/')
+          + 'auth-callback.html';
+
+        const { error } = await db.auth.signInWithOtp({
+          email,
+          options: { emailRedirectTo: redirectTo }
+        });
 
         if (error) {
           alert('Feil: ' + error.message);
-          btn.disabled = false; btn.textContent = 'Send kode';
+          btn.disabled = false; btn.textContent = 'Send innloggingslenke';
           return;
         }
 
-        sessionStorage.setItem('brim_flow',  'login');
-        sessionStorage.setItem('brim_phone', phone);
-        window.location.href = 'verify.html';
+        window.location.href = 'check-email.html?email=' + encodeURIComponent(email);
       });
     </script>
   </body>
