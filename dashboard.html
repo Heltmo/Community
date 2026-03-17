@@ -1777,15 +1777,6 @@
             </div>
           </div>
 
-          <!-- ── MINE INNLEGG ───────────────────────────────── -->
-          <div class="db-section">
-            <div class="db-section-header">
-              <span class="db-section-title">Mine innlegg</span>
-              <button class="db-section-link" id="dashGoToFellBtn">Gå til Fellesskapet</button>
-            </div>
-            <div id="myPostsList"><div class="loading">Laster…</div></div>
-          </div>
-
           <!-- ── MINE AKTIVITETER ───────────────────────────── -->
           <div class="db-section">
             <div class="db-section-header">
@@ -2314,7 +2305,6 @@ if (name === 'settings')    loadSettingsData();
         loadNesteArrangement();
         loadCommunityPreview();
         loadNowInFellesskap();
-        loadMyPosts();
         loadMyActivities();
 
         document.getElementById('dashGoToFellBtn').addEventListener('click', () => showSection('community'));
@@ -3356,31 +3346,6 @@ if (name === 'settings')    loadSettingsData();
           + '</div>'
         ).join('');
         document.getElementById('memberInfoCard').style.display = '';
-      }
-
-      async function loadMyPosts() {
-        const el = document.getElementById('myPostsList');
-        if (!currentSession) return;
-        const { data } = await db.from('community_posts')
-          .select('*').eq('author_id', currentSession.user.id)
-          .order('created_at', { ascending: false }).limit(10);
-        if (!data?.length) {
-          el.innerHTML =
-            '<div class="empty-invite">'
-            + '<span class="empty-invite-icon">✍️</span>'
-            + '<div class="empty-invite-title">Ingen innlegg ennå</div>'
-            + '<div class="empty-invite-text">Del noe i Fellesskapet — tanker, oppdateringer, bilder. Innleggene dine vises her.</div>'
-            + '<button class="empty-invite-btn" id="myPostsEmptyBtn">Del noe nå →</button>'
-            + '</div>';
-          document.getElementById('myPostsEmptyBtn').addEventListener('click', () => showSection('community'));
-          return;
-        }
-        el.innerHTML = data.map(p =>
-          '<div class="my-post-item">'
-          + '<div class="my-post-time">' + timeAgo(p.created_at) + '</div>'
-          + '<div class="my-post-text">' + escHtml(p.content) + '</div>'
-          + '</div>'
-        ).join('');
       }
 
       async function loadMyActivities() {
