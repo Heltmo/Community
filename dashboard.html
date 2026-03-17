@@ -1888,38 +1888,12 @@
            ARRANGEMENTER
            ══════════════════════════════════════════════════ -->
       <div class="section" id="sec-turneringer">
-        <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;">
-          <div>
-            <div class="page-title">Arrangementer</div>
-            <div class="events-intro">Her finner du kommende aktiviteter og arrangementer i UngOgAktiveNorge.</div>
-          </div>
-          <button class="btn btn-primary" id="proposeBtn" style="margin-top:0.5rem;white-space:nowrap;">+ Foreslå arrangement</button>
+        <div class="page-header">
+          <div class="page-title">Arrangementer</div>
+          <div class="events-intro">Her finner du kommende aktiviteter og arrangementer i UngOgAktiveNorge.</div>
         </div>
 
         <div class="events-page">
-
-          <!-- Info banner -->
-          <div class="events-info-banner">
-            <div class="events-info-inner">
-              <div class="events-info-icon">🎯</div>
-              <div class="events-info-text">
-                <div class="events-info-title">Start noe. Bli med. Skap aktivitet.</div>
-                <div class="events-info-body">
-                  Har du en idé til noe gøy? Lag et arrangement, inviter andre og skap aktivitet i UAN. Her kan medlemmer starte alt fra kamper og aktiviteter til samlinger og utfordringer – og alle kan bli med.
-                </div>
-                <div class="events-info-pills">
-                  <span class="events-info-pill">Kommende arrangementer</span>
-                  <span class="events-info-pill">Medlemsskapte aktiviteter</span>
-                  <span class="events-info-pill">Kamper og utfordringer</span>
-                  <span class="events-info-pill">Admin-godkjenning</span>
-                  <span class="events-info-pill">Premier og anerkjennelse</span>
-                </div>
-                <div class="events-info-actions">
-                  <button class="btn btn-ghost" id="scrollToEventsBtn">Se kommende →</button>
-                </div>
-              </div>
-            </div>
-          </div>
 
           <!-- Events grid / detail toggle -->
           <div id="eventsMain">
@@ -1937,48 +1911,8 @@
             </div>
           </div>
 
-          <!-- Mine forslag -->
-          <div style="margin-top:2.5rem; padding-top:2rem; border-top:1px solid rgba(255,255,255,0.06);">
-            <div class="events-section-header">
-              <span class="events-section-title">Mine forslag</span>
-            </div>
-            <div class="my-proposals-grid" id="mineForslagGrid">
-              <div class="loading">Laster…</div>
-            </div>
-          </div>
-
         </div>
 
-        <!-- Propose modal -->
-        <div class="modal-overlay hidden" id="proposeModal">
-          <div class="propose-modal">
-            <button class="modal-close-btn" id="proposeModalClose">✕</button>
-            <div class="modal-title">Foreslå arrangement</div>
-            <div class="modal-subtitle">Forslaget sendes til admin for godkjenning før det publiseres</div>
-            <div class="form-row">
-              <div class="form-field">
-                <label class="form-label" for="prop-title">Tittel</label>
-                <input class="form-input" id="prop-title" type="text" placeholder="Navn på arrangementet">
-              </div>
-              <div class="form-field">
-                <label class="form-label" for="prop-date">Dato</label>
-                <input class="form-input" id="prop-date" type="date">
-              </div>
-            </div>
-            <div class="form-field">
-              <label class="form-label" for="prop-location">Sted</label>
-              <input class="form-input" id="prop-location" type="text" placeholder="F.eks. Halden kulturhus">
-            </div>
-            <div class="form-field">
-              <label class="form-label" for="prop-desc">Beskrivelse</label>
-              <textarea class="form-textarea" id="prop-desc" placeholder="Beskriv arrangementet…"></textarea>
-            </div>
-            <div class="form-submit-row">
-              <button class="btn btn-ghost" id="proposeCancel">Avbryt</button>
-              <button class="btn btn-primary" id="proposeSubmit">Send forslag</button>
-            </div>
-          </div>
-        </div>
       </div>
 
       <!-- ══════════════════════════════════════════════════
@@ -2870,7 +2804,6 @@ if (name === 'settings')    loadSettingsData();
           .order('start_date', { ascending: true });
         calAllEvents = data || [];
         renderEventsGrid(calAllEvents);
-        loadMineForslag();
       }
 
       // ── Events grid ───────────────────────────────────────
@@ -2881,10 +2814,8 @@ if (name === 'settings')    loadSettingsData();
             '<div style="grid-column:1/-1;background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.07);border-radius:1.25rem;padding:2.75rem 2.5rem;text-align:center;">'
             + '<div style="font-size:2.5rem;margin-bottom:1rem;opacity:0.4;">📅</div>'
             + '<div style="font-size:1rem;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:0.5rem;">Ingen arrangementer er publisert ennå</div>'
-            + '<div style="font-size:0.855rem;color:rgba(255,255,255,0.35);line-height:1.65;max-width:380px;margin:0 auto 1.5rem;">Når nye aktiviteter og arrangementer blir lagt ut, vises de her. Du kan også være den første til å foreslå noe.</div>'
-            + '<button class="btn btn-primary" id="emptyProposeBtn">+ Foreslå arrangement</button>'
+            + '<div style="font-size:0.855rem;color:rgba(255,255,255,0.35);line-height:1.65;max-width:380px;margin:0 auto 1.5rem;">Når nye aktiviteter og arrangementer blir lagt ut, vises de her.</div>'
             + '</div>';
-          document.getElementById('emptyProposeBtn').addEventListener('click', openProposeModal);
           return;
         }
         el.innerHTML = events.map((t, i) => {
@@ -2968,155 +2899,6 @@ if (name === 'settings')    loadSettingsData();
         document.getElementById('eventsGridView').style.display = '';
         document.getElementById('eventDetailView').classList.remove('active');
       });
-
-      // ── Propose modal ─────────────────────────────────────
-      function openProposeModal() {
-        document.getElementById('proposeModal').classList.remove('hidden');
-      }
-      document.getElementById('proposeBtn').addEventListener('click', openProposeModal);
-      document.getElementById('scrollToEventsBtn').addEventListener('click', () => {
-        document.getElementById('eventsGrid').scrollIntoView({ behavior: 'smooth', block: 'start' });
-      });
-      document.getElementById('proposeModalClose').addEventListener('click', () => {
-        document.getElementById('proposeModal').classList.add('hidden');
-      });
-      document.getElementById('proposeCancel').addEventListener('click', () => {
-        document.getElementById('proposeModal').classList.add('hidden');
-      });
-      document.getElementById('proposeModal').addEventListener('click', function (e) {
-        if (e.target === this) this.classList.add('hidden');
-      });
-      document.getElementById('proposeSubmit').addEventListener('click', async () => {
-        const title    = document.getElementById('prop-title').value.trim();
-        const date     = document.getElementById('prop-date').value;
-        const location = document.getElementById('prop-location').value.trim();
-        const desc     = document.getElementById('prop-desc').value.trim();
-        if (!title) { document.getElementById('prop-title').focus(); return; }
-        const btn = document.getElementById('proposeSubmit');
-        btn.disabled = true; btn.textContent = 'Sender…';
-        const { error } = await db.from('event_proposals').insert({
-          member_id:   currentMember.id,
-          title,
-          description: desc || null,
-          location:    location || null,
-          event_date:  date || null,
-          status:      'pending',
-        });
-        btn.disabled = false; btn.textContent = 'Send forslag';
-        if (error) { alert(dashboardErrorMessage('create-proposal', error)); return; }
-        document.getElementById('proposeModal').classList.add('hidden');
-        ['prop-title','prop-date','prop-location','prop-desc'].forEach(id => { document.getElementById(id).value = ''; });
-        loadMineForslag();
-      });
-
-      // ── Mine forslag ──────────────────────────────────────
-      async function loadMineForslag() {
-        const el = document.getElementById('mineForslagGrid');
-        const { data, error } = await db.from('event_proposals').select('*')
-          .eq('member_id', currentMember.id)
-          .order('created_at', { ascending: false });
-        window._proposalCache = data || [];
-        if (error) {
-          console.error('loadMineForslag error:', error);
-          el.innerHTML = '<div style="grid-column:1/-1;padding:2rem;text-align:center;font-size:0.82rem;color:rgba(248,113,113,0.7);">' + escHtml(dashboardErrorMessage('load-proposals', error)) + '</div>';
-          return;
-        }
-        if (!data?.length) {
-          el.innerHTML =
-            '<div style="grid-column:1/-1;background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.07);border-radius:1.25rem;padding:2.25rem 2.5rem;text-align:center;">'
-            + '<div style="font-size:2.2rem;margin-bottom:0.9rem;opacity:0.4;">💡</div>'
-            + '<div style="font-size:0.95rem;font-weight:700;color:rgba(255,255,255,0.65);margin-bottom:0.45rem;">Du har ikke foreslått noe ennå</div>'
-            + '<div style="font-size:0.84rem;color:rgba(255,255,255,0.32);line-height:1.65;max-width:360px;margin:0 auto 1.35rem;">Har du en idé til en aktivitet, samling eller kamp? Send inn et forslag og bidra til mer aktivitet i UAN.</div>'
-            + '<button class="btn btn-ghost btn-sm" id="emptyProposeBtnMine">Send inn forslag</button>'
-            + '</div>';
-          document.getElementById('emptyProposeBtnMine').addEventListener('click', openProposeModal);
-          return;
-        }
-        const S = {
-          pending:      { label: 'Sendt inn',       cls: 'ps-pending'  },
-          under_review: { label: 'Under vurdering', cls: 'ps-review'   },
-          upcoming:     { label: 'Godkjent',        cls: 'ps-approved' },
-          active:       { label: 'Godkjent',        cls: 'ps-approved' },
-          completed:    { label: 'Godkjent',        cls: 'ps-approved' },
-          rejected:     { label: 'Avvist',          cls: 'ps-rejected' },
-        };
-        el.innerHTML = data.map(t => {
-          const dateStr = t.event_date
-            ? new Date(t.event_date).toLocaleDateString('no-NO', { day: 'numeric', month: 'long', year: 'numeric' })
-            : 'Dato ikke satt';
-          const s = S[t.status] || { label: t.status, cls: 'ps-pending' };
-          return '<div class="proposal-card">'
-            + '<div class="proposal-card-top">'
-            + '<div class="proposal-title">' + escHtml(t.title) + '</div>'
-            + '<span class="proposal-status-badge ' + s.cls + '">' + s.label + '</span>'
-            + '</div>'
-            + '<div class="proposal-meta">'
-            + '<div class="proposal-meta-row">📅 ' + escHtml(dateStr) + '</div>'
-            + (t.location ? '<div class="proposal-meta-row">📍 ' + escHtml(t.location) + '</div>' : '')
-            + '</div>'
-            + (t.description ? '<div class="proposal-desc">' + escHtml(t.description) + '</div>' : '')
-            + (t.status === 'pending'
-                ? '<button class="btn-sm-outline js-edit-proposal" data-id="' + t.id + '" style="margin-top:0.75rem;font-size:0.72rem;">Rediger</button>'
-                : '')
-            + '</div>';
-        }).join('');
-
-        el.querySelectorAll('.js-edit-proposal').forEach(btn => {
-          btn.addEventListener('click', () => openEditProposalModal(Number(btn.dataset.id)));
-        });
-      }
-
-      // ── Edit proposal modal (pending only) ────────────────
-      function openEditProposalModal(id) {
-        const existing = document.getElementById('editProposalModal');
-        if (existing) existing.remove();
-
-        const proposal = window._proposalCache?.find(p => p.id === id);
-        if (!proposal) return;
-
-        const modal = document.createElement('div');
-        modal.id = 'editProposalModal';
-        modal.className = 'modal-overlay';
-        modal.innerHTML =
-          '<div style="width:min(520px,100%);background:#0d0b1e;border:1px solid rgba(255,255,255,0.1);border-radius:1.5rem;padding:2.25rem 2.5rem;position:relative;box-shadow:0 40px 100px rgba(0,0,0,0.8);max-height:90vh;overflow-y:auto;">'
-          + '<button id="editPropClose" style="position:absolute;top:1.25rem;right:1.25rem;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);border-radius:0.5rem;width:30px;height:30px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.4);cursor:pointer;font-size:0.9rem;font-family:inherit;">✕</button>'
-          + '<div class="modal-title">Rediger forslag</div>'
-          + '<div class="modal-subtitle" style="font-size:0.82rem;color:rgba(255,255,255,0.32);margin-bottom:1.75rem;">Du kan redigere forslaget så lenge det er i status Sendt inn</div>'
-          + '<div class="form-row">'
-          + '<div class="form-field"><label class="form-label" for="ep-title">Tittel</label><input class="form-input" id="ep-title" type="text" value="' + escHtml(proposal.title) + '"></div>'
-          + '<div class="form-field"><label class="form-label" for="ep-date">Dato</label><input class="form-input" id="ep-date" type="date" value="' + escHtml(proposal.event_date || '') + '"></div>'
-          + '</div>'
-          + '<div class="form-field"><label class="form-label" for="ep-location">Sted</label><input class="form-input" id="ep-location" type="text" value="' + escHtml(proposal.location || '') + '"></div>'
-          + '<div class="form-field"><label class="form-label" for="ep-desc">Beskrivelse</label><textarea class="form-textarea" id="ep-desc">' + escHtml(proposal.description || '') + '</textarea></div>'
-          + '<div class="form-submit-row">'
-          + '<button class="btn btn-ghost" id="editPropCancel">Avbryt</button>'
-          + '<button class="btn btn-primary" id="editPropSave">Lagre endringer</button>'
-          + '</div>'
-          + '</div>';
-        document.body.appendChild(modal);
-
-        const closeModal = () => modal.remove();
-        document.getElementById('editPropClose').addEventListener('click', closeModal);
-        document.getElementById('editPropCancel').addEventListener('click', closeModal);
-        modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
-
-        document.getElementById('editPropSave').addEventListener('click', async () => {
-          const title    = document.getElementById('ep-title').value.trim();
-          const date     = document.getElementById('ep-date').value || null;
-          const location = document.getElementById('ep-location').value.trim() || null;
-          const desc     = document.getElementById('ep-desc').value.trim() || null;
-          if (!title) { document.getElementById('ep-title').focus(); return; }
-
-          const btn = document.getElementById('editPropSave');
-          btn.disabled = true; btn.textContent = 'Lagrer…';
-          const { error } = await db.from('event_proposals')
-            .update({ title, event_date: date, location, description: desc })
-            .eq('id', id).eq('status', 'pending');
-          if (error) { alert(dashboardErrorMessage('save-proposal', error)); btn.disabled = false; btn.textContent = 'Lagre endringer'; return; }
-          closeModal();
-          loadMineForslag();
-        });
-      }
 
       // ── RESULTATER ────────────────────────────────────────
       let allCompletedEvents = [];
