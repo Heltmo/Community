@@ -2410,7 +2410,7 @@ if (name === 'settings')    loadSettingsData();
         const { data: raw } = await db
           .from('community_posts').select('*')
           .order('created_at', { ascending: false }).limit(20);
-        const data = (raw || []).filter(p => p.parent_id == null).slice(0, 3);
+        const data = (raw || []).filter(p => p.parent_id == null && !p.is_hidden).slice(0, 3);
 
         const el = document.getElementById('communityPreview');
         if (!data?.length) {
@@ -3384,23 +3384,22 @@ if (name === 'settings')    loadSettingsData();
         // ── 1. Live updates ───────────────────────────────
         const [
           { data: newMembers },
-          { data: newPosts },
+          { data: newPostsRaw },
           { data: newEvents },
-          { data: proposals },
           { data: ann },
           { count: memberCount },
           { count: eventCount },
           { count: proposalCount },
         ] = await Promise.all([
           db.from('members').select('name, municipality').order('join_date', { ascending: false }).limit(2),
-          db.from('community_posts').select('author_name, created_at').is('parent_id', null).order('created_at', { ascending: false }).limit(2),
+          db.from('community_posts').select('author_name, created_at, parent_id').order('created_at', { ascending: false }).limit(10),
           db.from('tournaments').select('title, start_date').in('status', ['upcoming','active']).order('start_date', { ascending: true }).limit(2),
-          db.from('tournaments').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
           db.from('announcements').select('title').order('created_at', { ascending: false }).limit(1),
           db.from('members').select('id', { count: 'exact', head: true }),
           db.from('tournaments').select('id', { count: 'exact', head: true }).in('status', ['upcoming','active']),
-          db.from('tournaments').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
+          db.from('event_proposals').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
         ]);
+        const newPosts = (newPostsRaw || []).filter(p => p.parent_id == null).slice(0, 2);
 
         (newMembers || []).forEach(m => items.push({
           badge: 'Nytt medlem',
