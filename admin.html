@@ -206,6 +206,7 @@
       <div class="nav-item" data-section="forslag"><span class="icon">📋</span> Forslag</div>
       <div class="nav-item" data-section="arrangementer"><span class="icon">📅</span> Arrangementer</div>
       <div class="nav-item" data-section="innlegg"><span class="icon">◈</span> Innlegg</div>
+      <div class="nav-item" data-section="viktig-na"><span class="icon">✦</span> Viktig nå</div>
       <div class="nav-item" data-section="resultater"><span class="icon">★</span> Resultater</div>
 
       <span class="nav-section">Brukere</span>
@@ -356,6 +357,35 @@
         </div>
       </div>
 
+      <!-- ══ VIKTIG NÅ ═════════════════════════════════════ -->
+      <div class="section" id="sec-viktig-na">
+        <div class="page-header">
+          <div class="page-title">Viktig nå</div>
+          <div class="page-subtitle">Rediger innholdet som vises i hero-kortet på dashboardet</div>
+        </div>
+        <div class="card" style="margin-bottom:1.25rem;">
+          <div class="card-header">
+            <span class="card-title">Aktiv melding</span>
+            <button class="btn btn-ghost btn-sm" id="importantReloadBtn">Oppdater</button>
+          </div>
+          <div class="form-field">
+            <label class="form-label">Tittel</label>
+            <input class="form-input" id="importantTitle" placeholder="F.eks. Påmelding til vårens aktivitetshelg er åpen!" />
+          </div>
+          <div class="form-field">
+            <label class="form-label">Tekst</label>
+            <textarea class="form-textarea" id="importantContent" placeholder="Kort tekst som vises under tittelen på dashboardet…" style="min-height:140px;"></textarea>
+          </div>
+          <div class="form-row-actions">
+            <button class="btn btn-amber" id="importantSaveBtn">Lagre viktig nå</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Forhåndsvisning</span></div>
+          <div id="importantPreview" class="empty" style="text-align:left;padding:1.25rem;">Laster…</div>
+        </div>
+      </div>
+
       <!-- ══ RESULTATER ══════════════════════════════════════ -->
       <div class="section" id="sec-resultater">
         <div class="page-header">
@@ -420,6 +450,7 @@
     <script>
       let adminSession = null;
       let adminMember  = null;
+      let currentAnnouncementId = null;
 
       function adminErrorMessage(action, error) {
         const msg = String(error?.message || '').toLowerCase();
@@ -442,6 +473,8 @@
           'load-events': 'Kunne ikke laste arrangementer.',
           'save-event': 'Kunne ikke lagre arrangementet.',
           'load-posts': 'Kunne ikke laste innlegg.',
+          'load-announcement': 'Kunne ikke laste innholdet for Viktig nå.',
+          'save-announcement': 'Kunne ikke lagre Viktig nå.',
           'create-result': 'Kunne ikke publisere resultatet.',
           'load-results': 'Kunne ikke laste resultater.',
           'delete-result': 'Kunne ikke slette resultatet.',
@@ -463,6 +496,7 @@
           forslag:        loadForslag,
           arrangementer:  loadArrangementer,
           innlegg:        loadInnlegg,
+          'viktig-na':    loadViktigNaAdmin,
           resultater:     loadResultater,
           brukere:        loadBrukere,
         };
@@ -817,6 +851,86 @@
           });
         });
       }
+
+      // ══ VIKTIG NÅ ═══════════════════════════════════════
+      function renderViktigNaPreview(title, content) {
+        const el = document.getElementById('importantPreview');
+        const safeTitle = escHtml(title || 'Ingen tittel satt');
+        const safeContent = escHtml(content || 'Ingen tekst satt.');
+        el.innerHTML =
+          '<div style="display:inline-flex;align-items:center;gap:0.45rem;font-size:0.63rem;font-weight:700;text-transform:uppercase;letter-spacing:0.16em;color:#f59e0b;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.18);border-radius:99px;padding:0.22rem 0.75rem;margin-bottom:1rem;">'
+          + '<span style="width:5px;height:5px;border-radius:50%;background:#f59e0b;display:inline-block;"></span>Viktig nå</div>'
+          + '<div style="font-size:1.45rem;font-weight:800;line-height:1.2;color:#fff;letter-spacing:-0.025em;margin-bottom:0.75rem;">' + safeTitle + '</div>'
+          + '<div style="font-size:0.9rem;line-height:1.7;color:rgba(255,255,255,0.6);max-width:620px;">' + safeContent + '</div>';
+      }
+
+      async function loadViktigNaAdmin() {
+        const previewEl = document.getElementById('importantPreview');
+        previewEl.innerHTML = 'Laster…';
+
+        const { data, error } = await db.from('announcements').select('*').order('created_at', { ascending: false }).limit(1);
+        if (error) {
+          previewEl.textContent = adminErrorMessage('load-announcement', error);
+          return;
+        }
+
+        const announcement = data?.[0] || null;
+        currentAnnouncementId = announcement?.id || null;
+
+        const title = announcement?.title || '';
+        const content = announcement?.content || '';
+
+        document.getElementById('importantTitle').value = title;
+        document.getElementById('importantContent').value = content;
+        renderViktigNaPreview(title, content);
+      }
+
+      document.getElementById('importantReloadBtn').addEventListener('click', loadViktigNaAdmin);
+
+      document.getElementById('importantTitle').addEventListener('input', () => {
+        renderViktigNaPreview(
+          document.getElementById('importantTitle').value.trim(),
+          document.getElementById('importantContent').value.trim()
+        );
+      });
+
+      document.getElementById('importantContent').addEventListener('input', () => {
+        renderViktigNaPreview(
+          document.getElementById('importantTitle').value.trim(),
+          document.getElementById('importantContent').value.trim()
+        );
+      });
+
+      document.getElementById('importantSaveBtn').addEventListener('click', async () => {
+        const title = document.getElementById('importantTitle').value.trim();
+        const content = document.getElementById('importantContent').value.trim();
+
+        if (!title) { document.getElementById('importantTitle').focus(); return; }
+
+        const btn = document.getElementById('importantSaveBtn');
+        btn.disabled = true;
+        btn.textContent = 'Lagrer…';
+
+        const payload = { title, content: content || null };
+        const query = currentAnnouncementId
+          ? db.from('announcements').update(payload).eq('id', currentAnnouncementId)
+          : db.from('announcements').insert(payload).select('id').single();
+
+        const { data, error } = await query;
+        if (error) {
+          alert(adminErrorMessage('save-announcement', error));
+          btn.disabled = false;
+          btn.textContent = 'Lagre viktig nå';
+          return;
+        }
+
+        if (!currentAnnouncementId && data?.id) currentAnnouncementId = data.id;
+
+        btn.disabled = false;
+        btn.textContent = 'Lagre viktig nå';
+        renderViktigNaPreview(title, content);
+        alert('Viktig nå er oppdatert.');
+      });
 
       // ══ RESULTATER ═══════════════════════════════════════
       document.getElementById('resCreateBtn').addEventListener('click', async () => {
