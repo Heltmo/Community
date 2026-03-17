@@ -453,6 +453,23 @@
         </form>
       </div>
 
+      <!-- ── OTP PANEL ─────────────────────────────────── -->
+      <div class="panel" id="panelOtp">
+        <h1>Sjekk telefonen din.</h1>
+        <p class="subtitle">Vi sendte en 6-sifret kode til<br /><strong id="otpPhoneDisplay" style="color:#c4b5fd;"></strong></p>
+        <div class="divider"></div>
+        <div class="field">
+          <label for="otpCode">Verifiseringskode</label>
+          <input type="text" id="otpCode" placeholder="123456" maxlength="6" inputmode="numeric" autocomplete="one-time-code" />
+          <span class="error-msg" id="err-otpCode">Oppgi den 6-sifrede koden.</span>
+        </div>
+        <button type="button" class="submit-btn" id="otpVerifyBtn">Bekreft og fortsett</button>
+        <p class="footer-note" style="margin-top:1rem;">
+          Fikk du ikke koden?
+          <a href="#" id="resendOtpBtn" style="color:rgba(167,139,250,0.8);text-decoration:none;">Send på nytt</a>
+        </p>
+      </div>
+
       <!-- ── LOGIN PANEL ────────────────────────────────── -->
       <div class="panel" id="panelLogin">
         <h1>Logg inn</h1>
@@ -511,15 +528,13 @@
       document.getElementById('tabRegister').addEventListener('click', function () {
         document.getElementById('tabRegister').classList.add('active');
         document.getElementById('tabLogin').classList.remove('active');
-        document.getElementById('panelRegister').classList.add('active');
-        document.getElementById('panelLogin').classList.remove('active');
+        showPanel('panelRegister');
       });
 
       document.getElementById('tabLogin').addEventListener('click', function () {
         document.getElementById('tabLogin').classList.add('active');
         document.getElementById('tabRegister').classList.remove('active');
-        document.getElementById('panelLogin').classList.add('active');
-        document.getElementById('panelRegister').classList.remove('active');
+        showPanel('panelLogin');
       });
 
       /* ── VIDEO MONTAGE ─────────────────────────────────── */
@@ -573,6 +588,16 @@
         document.getElementById('err-bekreft').classList.toggle('visible', show);
       }
 
+      // Pending registration data (held while user verifies OTP)
+      let _pendingReg   = null;
+      let _pendingPhone = '';
+
+      function showPanel(id) {
+        ['panelRegister','panelOtp','panelLogin'].forEach(p => {
+          document.getElementById(p).classList.toggle('active', p === id);
+        });
+      }
+
       function authErrorMessage(action, error) {
         const msg = String(error?.message || '').toLowerCase();
 
@@ -582,11 +607,18 @@
         if (/rate limit|too many requests|security purposes/.test(msg)) {
           return 'Du har prøvd for mange ganger. Vent litt og prøv igjen.';
         }
+        if (/invalid.*phone|phone.*invalid|unable to validate/.test(msg)) {
+          return 'Telefonnummeret er ikke gyldig. Bruk format +47 000 00 000.';
+        }
+        if (/token.*expired|invalid.*token|otp.*invalid/.test(msg)) {
+          return 'Koden er feil eller har utløpt. Prøv igjen.';
+        }
         if (/invalid email|email.*invalid/.test(msg)) {
           return 'E-postadressen er ikke gyldig.';
         }
         const fallback = {
-          'send-link':      'Kunne ikke sende innloggingslenke. Prøv igjen.',
+          'send-otp':       'Kunne ikke sende kode. Prøv igjen.',
+          'verify-otp':     'Kunne ikke bekrefte koden. Prøv igjen.',
           'password-login': 'Feil telefonnummer eller passord.',
         };
 
@@ -634,42 +666,106 @@
         if (emailMissing) {
           document.getElementById('err-email').textContent = emailVal
             ? 'Oppgi en gyldig e-postadresse.'
-            : 'E-postadresse er påkrevd for innlogging.';
+            : 'E-postadresse er påkrevd.';
         }
 
         if (!name || !phone || !birthdate || !municipality || !bekreft || emailMissing) return;
 
         const btn = this.querySelector('button[type="submit"]');
         btn.disabled    = true;
-        btn.textContent = 'Sender lenke…';
+        btn.textContent = 'Sender kode…';
 
-        const redirectTo = window.location.origin
-          + window.location.pathname.replace(/\/[^/]*$/, '/')
-          + 'auth-callback.html';
+        const formattedPhone = formatPhone(phone);
 
-        const { error: authError } = await db.auth.signInWithOtp({
-          email: emailVal,
-          options: { emailRedirectTo: redirectTo }
-        });
+        const { error: otpError } = await db.auth.signInWithOtp({ phone: formattedPhone });
 
-        if (authError) {
-          alert(authErrorMessage('send-link', authError));
+        if (otpError) {
+          alert(authErrorMessage('send-otp', otpError));
           btn.disabled    = false;
           btn.textContent = 'Bli medlem';
           return;
         }
 
-        localStorage.setItem('uan_reg_' + emailVal, JSON.stringify({
-          name,
-          phone,
-          email:            emailVal,
-          birthdate,
-          municipality,
+        // Store pending registration data until OTP is verified
+        _pendingPhone = formattedPhone;
+        _pendingReg   = {
+          name, phone: formattedPhone, email: emailVal,
+          birthdate, municipality,
           wants_membership: true,
-          join_date:        new Date().toISOString().slice(0, 10)
-        }));
+          join_date: new Date().toISOString().slice(0, 10),
+        };
 
-        window.location.href = 'check-email.html?email=' + encodeURIComponent(emailVal);
+        btn.disabled    = false;
+        btn.textContent = 'Bli medlem';
+
+        // Show OTP panel
+        document.getElementById('otpPhoneDisplay').textContent = formattedPhone;
+        showPanel('panelOtp');
+        setTimeout(() => document.getElementById('otpCode').focus(), 100);
+      });
+
+      /* ── OTP VERIFY ─────────────────────────────────────── */
+      document.getElementById('otpCode').addEventListener('input', () => {
+        document.getElementById('otpCode').classList.remove('error');
+        document.getElementById('err-otpCode').classList.remove('visible');
+      });
+
+      document.getElementById('otpVerifyBtn').addEventListener('click', async () => {
+        const token = document.getElementById('otpCode').value.trim();
+        if (!token || token.length < 4) {
+          document.getElementById('otpCode').classList.add('error');
+          document.getElementById('err-otpCode').classList.add('visible');
+          return;
+        }
+
+        const btn = document.getElementById('otpVerifyBtn');
+        btn.disabled    = true;
+        btn.textContent = 'Bekrefter…';
+
+        const { data: { session }, error: verifyError } = await db.auth.verifyOtp({
+          phone: _pendingPhone,
+          token,
+          type: 'sms',
+        });
+
+        if (verifyError || !session) {
+          alert(authErrorMessage('verify-otp', verifyError));
+          btn.disabled    = false;
+          btn.textContent = 'Bekreft og fortsett';
+          return;
+        }
+
+        // Create member record if it doesn't exist yet
+        const existing = await getMember(session.user.id);
+        if (!existing && _pendingReg) {
+          await db.from('members').insert({
+            user_id:          session.user.id,
+            name:             _pendingReg.name,
+            phone:            _pendingReg.phone,
+            email:            _pendingReg.email,
+            birthdate:        _pendingReg.birthdate,
+            municipality:     _pendingReg.municipality,
+            wants_membership: true,
+            join_date:        _pendingReg.join_date,
+            verified:         true,
+            role:             'member',
+            xp:               0,
+            level_id:         1,
+          });
+          await postSystemMessage(
+            `🎉 Et nytt medlem har ankommet fellesskapet — velkommen, ${_pendingReg.name}!`
+          );
+        }
+
+        _pendingReg = null;
+        window.location.href = 'create-password.html';
+      });
+
+      document.getElementById('resendOtpBtn').addEventListener('click', async (e) => {
+        e.preventDefault();
+        if (!_pendingPhone) return;
+        await db.auth.signInWithOtp({ phone: _pendingPhone });
+        alert('Ny kode er sendt til ' + _pendingPhone);
       });
 
       /* ── LOGIN SUBMIT ──────────────────────────────────── */
