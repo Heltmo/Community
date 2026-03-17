@@ -580,13 +580,9 @@
         if (/invalid email|email.*invalid/.test(msg)) {
           return 'E-postadressen er ikke gyldig.';
         }
-        if (/invalid login credentials/.test(msg)) {
-          return 'Feil passord';
-        }
-
         const fallback = {
           'send-link': 'Kunne ikke sende innloggingslenke. Prøv igjen.',
-          'password-login': 'Kunne ikke logge inn. Prøv igjen.',
+          'otp-login': 'Kunne ikke sende innloggingslenke. Prøv igjen.',
         };
 
         return fallback[action] || 'Noe gikk galt. Prøv igjen.';
