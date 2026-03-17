@@ -2417,10 +2417,10 @@ if (name === 'settings')    loadSettingsData();
       const CP_ICONS   = ['👥','🌿','🔥'];
 
       async function loadCommunityPreview() {
-        const { data } = await db
+        const { data: raw } = await db
           .from('community_posts').select('*')
-          .is('parent_id', null)
-          .order('created_at', { ascending: false }).limit(3);
+          .order('created_at', { ascending: false }).limit(20);
+        const data = (raw || []).filter(p => p.parent_id == null).slice(0, 3);
 
         const el = document.getElementById('communityPreview');
         if (!data?.length) {
