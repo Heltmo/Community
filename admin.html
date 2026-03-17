@@ -421,6 +421,37 @@
       let adminSession = null;
       let adminMember  = null;
 
+      function adminErrorMessage(action, error) {
+        const msg = String(error?.message || '').toLowerCase();
+
+        if (/failed to fetch|network request failed|network error/.test(msg)) {
+          return 'Tilkoblingen feilet. Prøv igjen.';
+        }
+        if (/permission|not authorized|forbidden|jwt|row-level security/.test(msg)) {
+          return 'Du har ikke tilgang til å utføre denne handlingen.';
+        }
+        if (/duplicate key|already exists/.test(msg)) {
+          if (action === 'create-event') return 'Et lignende arrangement finnes allerede.';
+          if (action === 'create-result') return 'Dette resultatet finnes allerede.';
+        }
+
+        const fallback = {
+          'load-proposals': 'Kunne ikke laste forslag.',
+          'update-proposal': 'Kunne ikke oppdatere forslaget.',
+          'create-event': 'Kunne ikke opprette arrangementet.',
+          'load-events': 'Kunne ikke laste arrangementer.',
+          'save-event': 'Kunne ikke lagre arrangementet.',
+          'load-posts': 'Kunne ikke laste innlegg.',
+          'create-result': 'Kunne ikke publisere resultatet.',
+          'load-results': 'Kunne ikke laste resultater.',
+          'delete-result': 'Kunne ikke slette resultatet.',
+          'save-result': 'Kunne ikke lagre resultatet.',
+          'load-users': 'Kunne ikke laste brukere.',
+        };
+
+        return fallback[action] || 'Noe gikk galt. Prøv igjen.';
+      }
+
       // ══ NAV ══════════════════════════════════════════════
       function showSection(name) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -525,7 +556,7 @@
 
         // Fetch proposals + member names
         const { data, error } = await db.from('event_proposals').select('*, members(name)').order('created_at', { ascending: false });
-        if (error) { el.innerHTML = '<div class="empty">Feil: ' + escHtml(error.message) + '</div>'; return; }
+        if (error) { el.innerHTML = '<div class="empty">' + escHtml(adminErrorMessage('load-proposals', error)) + '</div>'; return; }
         forslagCache = data || [];
         renderForslagTable(forslagCache);
       }
@@ -596,7 +627,7 @@
       async function updateForslagStatus(id, status) {
         const note = document.getElementById('forslagNote')?.value.trim() || null;
         const { error } = await db.from('event_proposals').update({ status, admin_note: note }).eq('id', id);
-        if (error) { alert('Feil: ' + error.message); return; }
+        if (error) { alert(adminErrorMessage('update-proposal', error)); return; }
         document.getElementById('forslagModal').classList.add('hidden');
         await loadForslag();
         // Refresh pending count
@@ -622,7 +653,7 @@
         if (!title) { document.getElementById('evTitle').focus(); return; }
 
         const { error } = await db.from('tournaments').insert({ title, description: desc, start_date: date, location, status });
-        if (error) { alert('Feil: ' + error.message); return; }
+        if (error) { alert(adminErrorMessage('create-event', error)); return; }
         ['evTitle','evLocation','evDesc'].forEach(id => { document.getElementById(id).value = ''; });
         document.getElementById('evDate').value   = '';
         document.getElementById('evStatus').value = 'draft';
@@ -635,7 +666,7 @@
         const el = document.getElementById('evTable');
         el.innerHTML = '<div class="loading">Laster…</div>';
         const { data, error } = await db.from('tournaments').select('*').order('created_at', { ascending: false });
-        if (error) { el.innerHTML = '<div class="empty">Feil: ' + escHtml(error.message) + '</div>'; return; }
+        if (error) { el.innerHTML = '<div class="empty">' + escHtml(adminErrorMessage('load-events', error)) + '</div>'; return; }
         if (!data?.length) { el.innerHTML = '<div class="empty">Ingen arrangementer.</div>'; return; }
         evCache = data;
 
@@ -727,7 +758,7 @@
           const { error } = await db.from('tournaments')
             .update({ title, start_date: date, location, description: desc, status })
             .eq('id', id);
-          if (error) { alert('Feil: ' + error.message); btn.disabled = false; btn.textContent = 'Lagre'; return; }
+          if (error) { alert(adminErrorMessage('save-event', error)); btn.disabled = false; btn.textContent = 'Lagre'; return; }
           close();
           loadArrangementer();
         });
@@ -747,7 +778,7 @@
         const { data, error } = await db.from('community_posts')
           .select('id, author_name, content, type, is_hidden, is_pinned, created_at')
           .order('created_at', { ascending: false }).limit(80);
-        if (error) { el.innerHTML = '<div class="empty">Feil: ' + escHtml(error.message) + '</div>'; return; }
+        if (error) { el.innerHTML = '<div class="empty">' + escHtml(adminErrorMessage('load-posts', error)) + '</div>'; return; }
         if (!data?.length) { el.innerHTML = '<div class="empty">Ingen innlegg.</div>'; return; }
 
         el.innerHTML = '<table><thead><tr><th>Forfatter</th><th>Innhold</th><th>Type</th><th>Dato</th><th>Status</th><th></th></tr></thead><tbody>'
@@ -799,7 +830,7 @@
           winner_name: winner,
           position: 1,
         });
-        if (error) { alert('Feil: ' + error.message); return; }
+        if (error) { alert(adminErrorMessage('create-result', error)); return; }
 
         // Post to community feed
         const evName = document.getElementById('resEvent').options[document.getElementById('resEvent').selectedIndex].textContent;
@@ -820,7 +851,7 @@
         const { data, error } = await db.from('tournament_results')
           .select('*, tournaments(title)')
           .order('created_at', { ascending: false });
-        if (error) { el.innerHTML = '<div class="empty">Feil: ' + escHtml(error.message) + '</div>'; return; }
+        if (error) { el.innerHTML = '<div class="empty">' + escHtml(adminErrorMessage('load-results', error)) + '</div>'; return; }
         if (!data?.length) { el.innerHTML = '<div class="empty">Ingen resultater.</div>'; return; }
 
         resCache = data;
@@ -845,7 +876,7 @@
           btn.addEventListener('click', async () => {
             if (!confirm('Slette dette resultatet permanent?')) return;
             const { error } = await db.from('tournament_results').delete().eq('id', Number(btn.dataset.id));
-            if (error) { alert('Feil: ' + error.message); return; }
+            if (error) { alert(adminErrorMessage('delete-result', error)); return; }
             loadResultater();
           });
         });
@@ -896,7 +927,7 @@
           const { error } = await db.from('tournament_results')
             .update({ winner_name: winner, position })
             .eq('id', id);
-          if (error) { alert('Feil: ' + error.message); btn.disabled = false; btn.textContent = 'Lagre'; return; }
+          if (error) { alert(adminErrorMessage('save-result', error)); btn.disabled = false; btn.textContent = 'Lagre'; return; }
           close();
           loadResultater();
         });
@@ -909,7 +940,7 @@
         const el = document.getElementById('usersTable');
         el.innerHTML = '<div class="loading">Laster…</div>';
         const { data, error } = await db.from('members').select('*').order('join_date', { ascending: false });
-        if (error) { el.innerHTML = '<div class="empty">Feil: ' + escHtml(error.message) + '</div>'; return; }
+        if (error) { el.innerHTML = '<div class="empty">' + escHtml(adminErrorMessage('load-users', error)) + '</div>'; return; }
         if (!data?.length) { el.innerHTML = '<div class="empty">Ingen brukere.</div>'; return; }
 
         el.innerHTML = '<table><thead><tr><th>Navn</th><th>E-post</th><th>Telefon</th><th>Kommune</th><th>Rolle</th><th>Status</th><th></th></tr></thead><tbody>'

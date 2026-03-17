@@ -573,6 +573,30 @@
         document.getElementById('err-bekreft').classList.toggle('visible', show);
       }
 
+      function authErrorMessage(action, error) {
+        const msg = String(error?.message || '').toLowerCase();
+
+        if (/failed to fetch|network request failed|network error/.test(msg)) {
+          return 'Tilkoblingen feilet. Prøv igjen.';
+        }
+        if (/rate limit|too many requests|security purposes/.test(msg)) {
+          return 'Du har prøvd for mange ganger. Vent litt og prøv igjen.';
+        }
+        if (/invalid email|email.*invalid/.test(msg)) {
+          return 'E-postadressen er ikke gyldig.';
+        }
+        if (/invalid login credentials/.test(msg)) {
+          return 'Feil passord';
+        }
+
+        const fallback = {
+          'send-link': 'Kunne ikke sende innloggingslenke. Prøv igjen.',
+          'password-login': 'Kunne ikke logge inn. Prøv igjen.',
+        };
+
+        return fallback[action] || 'Noe gikk galt. Prøv igjen.';
+      }
+
       // Clear error on input
       ['fullName','phoneNumber','email','birthdate','kommune'].forEach(id => {
         document.getElementById(id).addEventListener('input', () => {
@@ -642,7 +666,7 @@
         });
 
         if (authError) {
-          alert('Kunne ikke sende innloggingslenke: ' + authError.message);
+          alert(authErrorMessage('send-link', authError));
           btn.disabled    = false;
           btn.textContent = 'Bli medlem';
           return;
@@ -682,7 +706,7 @@
         });
 
         if (error) {
-          alert('Feil: ' + error.message);
+          alert(authErrorMessage('password-login', error));
           btn.disabled    = false;
           btn.textContent = 'Logg inn';
           return;

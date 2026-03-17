@@ -122,8 +122,9 @@
         display: flex;
         flex-direction: column;
         justify-content: center;
-        padding: 3.5rem 3rem 3rem 2.75rem;
+        padding: 3.5rem 2.75rem 3rem 3rem;
         width: 50%;
+        margin-left: auto;
       }
 
       .hero-eyebrow {
@@ -174,7 +175,7 @@
       /* Right panel — card positioned right side */
       .hero-right {
         position: absolute;
-        top: 0; right: 0; bottom: 0;
+        top: 0; left: 0; bottom: 0;
         width: 50%;
         z-index: 3;
       }
@@ -223,7 +224,7 @@
       .hero-photo-overlay {
         position: absolute; inset: 0;
         background:
-          linear-gradient(to right, rgba(4,3,12,0.97) 0%, rgba(4,3,12,0.82) 28%, rgba(4,3,12,0.35) 55%, rgba(4,3,12,0.2) 100%),
+          linear-gradient(to left, rgba(4,3,12,0.97) 0%, rgba(4,3,12,0.82) 28%, rgba(4,3,12,0.35) 55%, rgba(4,3,12,0.2) 100%),
           linear-gradient(to top, rgba(4,3,12,0.55) 0%, transparent 50%);
         z-index: 2;
       }
@@ -231,8 +232,8 @@
       /* Card — right-aligned inside photo panel */
       .hero-card-wrap {
         position: absolute; inset: 0;
-        display: flex; align-items: center; justify-content: flex-end;
-        padding: 2.75rem 2.75rem 2.75rem 1rem;
+        display: flex; align-items: center; justify-content: flex-start;
+        padding: 2.75rem 1rem 2.75rem 2.75rem;
         z-index: 2;
       }
 
@@ -2139,6 +2140,45 @@
           .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
       }
 
+      function dashboardErrorMessage(action, error) {
+        const msg = String(error?.message || '').toLowerCase();
+
+        if (/failed to fetch|network request failed|network error/.test(msg)) {
+          return 'Tilkoblingen feilet. Prøv igjen.';
+        }
+        if (/permission|not authorized|forbidden|jwt|row-level security/.test(msg)) {
+          return 'Du har ikke tilgang til å utføre denne handlingen.';
+        }
+        if (/invalid email|email.*invalid/.test(msg)) {
+          return 'E-postadressen er ikke gyldig.';
+        }
+        if (/already registered|already in use|email.*exists/.test(msg)) {
+          return 'E-postadressen er allerede i bruk.';
+        }
+        if (/same password|new password should be different/.test(msg)) {
+          return 'Velg et annet passord enn det du bruker nå.';
+        }
+        if (/password.*at least|weak password/.test(msg)) {
+          return 'Passordet oppfyller ikke kravene.';
+        }
+        if (/duplicate key|already exists/.test(msg)) {
+          if (action === 'sign-up-event') return 'Du er allerede påmeldt dette arrangementet.';
+        }
+
+        const fallback = {
+          'submit-comment': 'Kommentaren kunne ikke sendes. Prøv igjen.',
+          'create-proposal': 'Kunne ikke sende inn forslaget. Prøv igjen.',
+          'load-proposals': 'Kunne ikke laste forslagene dine.',
+          'save-proposal': 'Kunne ikke lagre endringene i forslaget.',
+          'change-password': 'Kunne ikke endre passordet.',
+          'change-email': 'Kunne ikke endre e-postadressen.',
+          'save-phone': 'Kunne ikke lagre telefonnummeret.',
+          'save-profile': 'Kunne ikke lagre profilen.',
+        };
+
+        return fallback[action] || 'Noe gikk galt. Prøv igjen.';
+      }
+
       // ── NAVIGATION ───────────────────────────────────────
       function showSection(name) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -2622,7 +2662,7 @@ if (name === 'settings')    loadSettingsData();
           }
           // Restore input text
           input.value = content;
-          alert('Kommentar kunne ikke sendes.\n\nFeil: ' + (error.message || 'Ukjent feil') + '\n\nSjekk at schema.sql er kjørt i Supabase.');
+          alert(dashboardErrorMessage('submit-comment', error));
           return;
         }
 
@@ -2845,7 +2885,7 @@ if (name === 'settings')    loadSettingsData();
         if (!title) { document.getElementById('prop-title').focus(); return; }
         const btn = document.getElementById('proposeSubmit');
         btn.disabled = true; btn.textContent = 'Sender…';
-        await db.from('event_proposals').insert({
+        const { error } = await db.from('event_proposals').insert({
           member_id:   currentMember.id,
           title,
           description: desc || null,
@@ -2854,6 +2894,7 @@ if (name === 'settings')    loadSettingsData();
           status:      'pending',
         });
         btn.disabled = false; btn.textContent = 'Send forslag';
+        if (error) { alert(dashboardErrorMessage('create-proposal', error)); return; }
         document.getElementById('proposeModal').classList.add('hidden');
         ['prop-title','prop-date','prop-location','prop-desc'].forEach(id => { document.getElementById(id).value = ''; });
         loadMineForslag();
@@ -2868,7 +2909,7 @@ if (name === 'settings')    loadSettingsData();
         window._proposalCache = data || [];
         if (error) {
           console.error('loadMineForslag error:', error);
-          el.innerHTML = '<div style="grid-column:1/-1;padding:2rem;text-align:center;font-size:0.82rem;color:rgba(248,113,113,0.7);">Kunne ikke laste forslag: ' + escHtml(error.message) + '</div>';
+          el.innerHTML = '<div style="grid-column:1/-1;padding:2rem;text-align:center;font-size:0.82rem;color:rgba(248,113,113,0.7);">' + escHtml(dashboardErrorMessage('load-proposals', error)) + '</div>';
           return;
         }
         if (!data?.length) {
@@ -2962,7 +3003,7 @@ if (name === 'settings')    loadSettingsData();
           const { error } = await db.from('event_proposals')
             .update({ title, event_date: date, location, description: desc })
             .eq('id', id).eq('status', 'pending');
-          if (error) { alert('Feil: ' + error.message); btn.disabled = false; btn.textContent = 'Lagre endringer'; return; }
+          if (error) { alert(dashboardErrorMessage('save-proposal', error)); btn.disabled = false; btn.textContent = 'Lagre endringer'; return; }
           closeModal();
           loadMineForslag();
         });
@@ -3472,7 +3513,7 @@ if (name === 'settings')    loadSettingsData();
           if (newPw !== confirmPw) { alert('Passordene stemmer ikke overens.'); return; }
           if (newPw.length < 6)   { alert('Passordet må være minst 6 tegn.'); return; }
           const { error } = await db.auth.updateUser({ password: newPw });
-          if (error) { alert('Kunne ikke endre passord: ' + error.message); return; }
+          if (error) { alert(dashboardErrorMessage('change-password', error)); return; }
           document.getElementById('settingsCurrentPw').value = '';
           document.getElementById('settingsNewPw').value = '';
           document.getElementById('settingsConfirmPw').value = '';
@@ -3480,11 +3521,12 @@ if (name === 'settings')    loadSettingsData();
 
         if (email && email !== currentSession?.user?.email) {
           const { error } = await db.auth.updateUser({ email });
-          if (error) { alert('Kunne ikke endre e-post: ' + error.message); return; }
+          if (error) { alert(dashboardErrorMessage('change-email', error)); return; }
         }
 
         if (phone !== (currentMember?.phone || '')) {
-          await db.from('members').update({ phone }).eq('user_id', currentSession.user.id);
+          const { error } = await db.from('members').update({ phone }).eq('user_id', currentSession.user.id);
+          if (error) { alert(dashboardErrorMessage('save-phone', error)); return; }
           if (currentMember) currentMember.phone = phone;
         }
 
@@ -3501,7 +3543,7 @@ if (name === 'settings')    loadSettingsData();
           .update({ name, bio, kommune, avatar_url: avatar_url || null })
           .eq('user_id', currentSession.user.id);
 
-        if (error) { alert('Kunne ikke lagre profil: ' + error.message); return; }
+        if (error) { alert(dashboardErrorMessage('save-profile', error)); return; }
 
         if (currentMember) {
           currentMember.name = name;
