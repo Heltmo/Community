@@ -374,7 +374,7 @@
          CONTENT AREA (padding wrapper below hero)
          ══════════════════════════════════════════════════ */
       .dashboard-body {
-        padding: 2.5rem 3.25rem 4rem;
+        padding: 2.25rem 2.75rem 3.5rem;
       }
 
       /* ══════════════════════════════════════════════════
@@ -400,7 +400,7 @@
         display: flex; align-items: center; gap: 0.38rem;
         font-size: 0.65rem; font-weight: 700;
         text-transform: uppercase; letter-spacing: 0.13em;
-        color: rgba(255,255,255,0.28);
+        color: rgba(255,255,255,0.42);
         margin-bottom: 1rem;
       }
       .dash-card-label::before {
@@ -453,8 +453,8 @@
         padding: 0.58rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);
       }
       .status-row:last-child { border-bottom: none; }
-      .status-row-label { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
-      .status-row-value { font-size: 0.8rem; color: rgba(255,255,255,0.72); font-weight: 600; }
+      .status-row-label { font-size: 0.7rem; color: rgba(255,255,255,0.4); }
+      .status-row-value { font-size: 0.82rem; color: rgba(255,255,255,0.88); font-weight: 600; }
 
       /* Nå i fellesskapet — live rotator */
       .now-card {
@@ -507,7 +507,7 @@
       /* ══════════════════════════════════════════════════
          SECTION HEADERS
          ══════════════════════════════════════════════════ */
-      .db-section { margin-bottom: 3.75rem; }
+      .db-section { margin-bottom: 2.75rem; }
       .db-section-header {
         display: flex; align-items: center; justify-content: space-between;
         margin-bottom: 1.1rem;
@@ -515,7 +515,7 @@
       .db-section-title {
         font-size: 0.7rem; font-weight: 700;
         text-transform: uppercase; letter-spacing: 0.12em;
-        color: rgba(255,255,255,0.32);
+        color: rgba(255,255,255,0.45);
       }
       .db-section-link {
         font-size: 0.75rem; font-weight: 500;
@@ -775,15 +775,20 @@
         gap: 1rem;
       }
       .info-card {
-        background: transparent;
-        border: 1px solid rgba(255,255,255,0.055);
-        border-radius: 1rem; padding: 1.2rem 1.3rem;
+        background: rgba(255,255,255,0.025);
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 1rem; padding: 1.35rem 1.4rem;
         transition: border-color 0.2s;
       }
-      .info-card:hover { border-color: rgba(255,255,255,0.09); }
-      .info-card-icon  { font-size: 1.2rem; margin-bottom: 0.55rem; display: block; opacity: 0.5; }
-      .info-card-title { font-size: 0.85rem; font-weight: 600; color: rgba(255,255,255,0.5); margin-bottom: 0.35rem; }
-      .info-card-text  { font-size: 0.77rem; color: rgba(255,255,255,0.26); line-height: 1.6; }
+      .info-card:hover { border-color: rgba(255,255,255,0.12); }
+      .info-card-icon  { font-size: 1.3rem; margin-bottom: 0.6rem; display: block; opacity: 0.75; }
+      .info-card-title { font-size: 0.88rem; font-weight: 700; color: rgba(255,255,255,0.75); margin-bottom: 0.55rem; }
+      .info-card-text  { font-size: 0.79rem; color: rgba(255,255,255,0.42); line-height: 1.65; }
+      .info-rule {
+        display: flex; align-items: flex-start; gap: 0.5rem;
+        font-size: 0.79rem; color: rgba(255,255,255,0.42); padding: 0.18rem 0; line-height: 1.5;
+      }
+      .info-rule::before { content: '·'; color: #a78bfa; font-weight: 700; font-size: 1.1rem; flex-shrink: 0; line-height: 1.3; }
 
       /* ══════════════════════════════════════════════════
          OTHER SECTIONS
@@ -1799,17 +1804,32 @@
               <div class="info-card">
                 <span class="info-card-icon">🏛️</span>
                 <div class="info-card-title">Om UAN</div>
-                <div class="info-card-text">Ung og Aktive Norge er en nasjonal forening for unge og aktive mennesker som ønsker å bidra til et levende og inkluderende samfunn.</div>
+                <div class="info-card-text">
+                  <div class="info-rule">Nasjonal forening for unge og aktive</div>
+                  <div class="info-rule">Arrangementer, aktiviteter og fellesskap</div>
+                  <div class="info-rule">Skap minner og nye forbindelser</div>
+                  <div class="info-rule">Alle er velkomne — uansett bakgrunn</div>
+                </div>
               </div>
               <div class="info-card">
                 <span class="info-card-icon">📋</span>
-                <div class="info-card-title">Regler</div>
-                <div class="info-card-text">Alle medlemmer forventes å opptre respektfullt. Hatefulle ytringer og ekskluderende atferd tolereres ikke.</div>
+                <div class="info-card-title">Fellesskapsregler</div>
+                <div class="info-card-text">
+                  <div class="info-rule">Vis respekt for alle medlemmer</div>
+                  <div class="info-rule">Hold tonen positiv og konstruktiv</div>
+                  <div class="info-rule">Hatefulle ytringer tolereres ikke</div>
+                  <div class="info-rule">Vær inkluderende og støttende</div>
+                </div>
               </div>
               <div class="info-card">
                 <span class="info-card-icon">🤝</span>
                 <div class="info-card-title">Forventninger</div>
-                <div class="info-card-text">Delta aktivt, bidra positivt og still opp for hverandre. Meld deg på arrangementer og hold deg oppdatert.</div>
+                <div class="info-card-text">
+                  <div class="info-rule">Delta aktivt på arrangementer</div>
+                  <div class="info-rule">Del og bidra i Fellesskapet</div>
+                  <div class="info-rule">Hold deg oppdatert på nye aktiviteter</div>
+                  <div class="info-rule">Still opp for hverandre</div>
+                </div>
               </div>
             </div>
           </div>
@@ -2374,8 +2394,18 @@ if (name === 'settings')    loadSettingsData();
           : '—';
         const memberId = m?.id ? '#' + String(m.id).padStart(4,'0') : '—';
 
+        const firstName = (m?.name || '').split(' ')[0] || 'Hei';
+        const roleLabel = m?.role === 'admin' ? 'Administrator' : 'Medlem';
+
         document.getElementById('minStatus').innerHTML =
-          '<div class="status-pill ' + (active ? 'status-active' : 'status-inactive') + '">'
+          '<div style="display:flex;align-items:center;gap:0.65rem;margin-bottom:1rem;">'
+          + '<div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#7c5cfc,#a78bfa);display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:700;color:#fff;flex-shrink:0;">'
+          + escHtml((m?.name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase())
+          + '</div>'
+          + '<div><div style="font-size:0.88rem;font-weight:700;color:rgba(255,255,255,0.9);">Hei, ' + escHtml(firstName) + '</div>'
+          + '<div style="font-size:0.67rem;color:rgba(167,139,250,0.7);margin-top:0.1rem;">' + roleLabel + '</div></div>'
+          + '</div>'
+          + '<div class="status-pill ' + (active ? 'status-active' : 'status-inactive') + '">'
           + (active ? 'Aktiv' : 'Inaktiv') + '</div>'
           + '<div class="status-row"><span class="status-row-label">Innmeldt</span><span class="status-row-value">' + joinDate + '</span></div>'
           + '<div class="status-row"><span class="status-row-label">Medlemsnummer</span><span class="status-row-value">' + memberId + '</span></div>'
