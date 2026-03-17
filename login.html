@@ -15,7 +15,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 2rem 1.25rem;
+        padding: 1.5rem 1rem;
         background: #080810;
         position: relative;
         overflow: hidden;
@@ -40,14 +40,14 @@
 
       .card {
         position: relative; z-index: 2;
-        width: min(420px, 100%);
+        width: min(440px, 100%);
         background: rgba(12,12,22,0.82);
         border: 1px solid rgba(255,255,255,0.09);
-        border-radius: 1.75rem;
-        padding: 3rem 2.75rem;
+        border-radius: 1.5rem;
+        padding: 2.25rem 2.25rem;
         backdrop-filter: blur(32px);
         -webkit-backdrop-filter: blur(32px);
-        box-shadow: 0 0 0 1px rgba(255,255,255,0.03), 0 40px 100px rgba(0,0,0,0.65);
+        box-shadow: 0 0 0 1px rgba(255,255,255,0.03), 0 32px 80px rgba(0,0,0,0.6);
         animation: rise 0.65s cubic-bezier(0.22,1,0.36,1) both;
       }
       @keyframes rise { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
@@ -58,7 +58,7 @@
         background: linear-gradient(90deg, transparent, rgba(140,100,255,0.55), transparent);
       }
 
-      .brand { display: flex; align-items: center; gap: 0.55rem; margin-bottom: 2.25rem; }
+      .brand { display: flex; align-items: center; gap: 0.55rem; margin-bottom: 1.25rem; }
       .brand-dot {
         width: 10px; height: 10px; border-radius: 50%;
         background: linear-gradient(135deg, #a78bfa, #c4b5fd);
@@ -70,22 +70,22 @@
         color: rgba(255,255,255,0.45);
       }
 
-      h1 { font-size: 1.85rem; font-weight: 700; color: #fff; letter-spacing: -0.025em; margin-bottom: 0.5rem; }
-      .subtitle { font-size: 0.88rem; color: rgba(255,255,255,0.38); margin-bottom: 2rem; line-height: 1.6; }
-      .divider { height: 1px; background: rgba(255,255,255,0.06); margin-bottom: 2rem; }
+      h1 { font-size: 1.65rem; font-weight: 700; color: #fff; letter-spacing: -0.025em; margin-bottom: 0.4rem; }
+      .subtitle { font-size: 0.83rem; color: rgba(255,255,255,0.38); margin-bottom: 1.25rem; line-height: 1.6; }
+      .divider { height: 1px; background: rgba(255,255,255,0.06); margin-bottom: 1.25rem; }
 
-      .field { margin-bottom: 1.2rem; }
+      .field { margin-bottom: 0.85rem; }
       label {
-        display: block; font-size: 0.74rem; font-weight: 600;
-        letter-spacing: 0.09em; text-transform: uppercase;
-        color: rgba(255,255,255,0.38); margin-bottom: 0.5rem;
+        display: block; font-size: 0.7rem; font-weight: 600;
+        letter-spacing: 0.08em; text-transform: uppercase;
+        color: rgba(255,255,255,0.38); margin-bottom: 0.35rem;
       }
       input {
-        width: 100%; padding: 0.82rem 1.1rem;
-        font-size: 0.95rem; font-family: inherit;
+        width: 100%; padding: 0.65rem 0.95rem;
+        font-size: 0.9rem; font-family: inherit;
         background: rgba(255,255,255,0.045);
         border: 1px solid rgba(255,255,255,0.08);
-        border-radius: 0.9rem; color: #fff; outline: none;
+        border-radius: 0.75rem; color: #fff; outline: none;
         transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
       }
       input::placeholder { color: rgba(255,255,255,0.18); }
@@ -99,9 +99,9 @@
       .error-msg.visible { display: block; }
 
       button {
-        margin-top: 0.5rem; width: 100%; padding: 0.9rem;
-        font-size: 0.95rem; font-family: inherit; font-weight: 600;
-        border: none; border-radius: 0.9rem; cursor: pointer;
+        margin-top: 0.4rem; width: 100%; padding: 0.75rem;
+        font-size: 0.9rem; font-family: inherit; font-weight: 600;
+        border: none; border-radius: 0.75rem; cursor: pointer;
         background: linear-gradient(135deg, #7c5cfc, #a78bfa);
         color: #fff; transition: transform 0.15s, box-shadow 0.2s, opacity 0.15s;
         box-shadow: 0 4px 20px rgba(124,92,252,0.35);
@@ -110,9 +110,16 @@
       button:active { transform: translateY(1px); }
       button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
-      .footer-note { text-align: center; margin-top: 1.6rem; font-size: 0.78rem; color: rgba(255,255,255,0.25); }
+      .footer-note { text-align: center; margin-top: 1.25rem; font-size: 0.78rem; color: rgba(255,255,255,0.25); }
       .footer-note a { color: rgba(167,139,250,0.8); text-decoration: none; }
       .footer-note a:hover { color: #a78bfa; }
+
+      @media (max-width: 600px) {
+        .card { width: 100%; padding: 1.75rem 1.5rem; border-radius: 1.25rem; }
+        h1 { font-size: 1.45rem; }
+        input { padding: 0.6rem 0.85rem; font-size: 0.875rem; }
+        button { padding: 0.7rem; font-size: 0.875rem; }
+      }
     </style>
   </head>
   <body>

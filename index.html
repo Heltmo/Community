@@ -18,7 +18,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 2rem 1.25rem;
+        padding: 1.5rem 1rem;
         background: #0d0e1a;
         position: relative;
         overflow: hidden;
@@ -63,17 +63,17 @@
       .card {
         position: relative;
         z-index: 2;
-        width: min(520px, 100%);
+        width: min(440px, 100%);
         background: rgba(12, 12, 22, 0.80);
         border: 1px solid rgba(255, 255, 255, 0.09);
-        border-radius: 1.75rem;
-        padding: 3rem 2.75rem;
+        border-radius: 1.5rem;
+        padding: 2.25rem 2.25rem;
         backdrop-filter: blur(32px);
         -webkit-backdrop-filter: blur(32px);
         box-shadow:
           0 0 0 1px rgba(255,255,255,0.03),
-          0 40px 100px rgba(0,0,0,0.65),
-          0 0 80px rgba(100,70,200,0.08);
+          0 32px 80px rgba(0,0,0,0.6),
+          0 0 60px rgba(100,70,200,0.07);
         animation: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
       }
 
@@ -95,7 +95,7 @@
         display: flex;
         align-items: center;
         gap: 0.55rem;
-        margin-bottom: 1.5rem;
+        margin-bottom: 1.1rem;
       }
 
       .brand-dot {
@@ -118,7 +118,7 @@
       .auth-tabs {
         display: flex;
         gap: 0.25rem;
-        margin-bottom: 2rem;
+        margin-bottom: 1.5rem;
         background: rgba(255,255,255,0.04);
         border: 1px solid rgba(255,255,255,0.07);
         border-radius: 0.75rem;
@@ -157,18 +157,18 @@
 
       /* ── TYPOGRAPHY ───────────────────────────────────── */
       h1 {
-        font-size: 2rem;
+        font-size: 1.65rem;
         font-weight: 700;
         color: #fff;
         letter-spacing: -0.025em;
         line-height: 1.15;
-        margin-bottom: 0.55rem;
+        margin-bottom: 0.4rem;
       }
 
       .subtitle {
-        font-size: 0.88rem;
+        font-size: 0.83rem;
         color: rgba(255,255,255,0.38);
-        margin-bottom: 2.25rem;
+        margin-bottom: 1.5rem;
         font-weight: 400;
         line-height: 1.6;
       }
@@ -176,30 +176,30 @@
       .divider {
         height: 1px;
         background: rgba(255,255,255,0.06);
-        margin-bottom: 2.25rem;
+        margin-bottom: 1.5rem;
       }
 
       /* ── FORM ─────────────────────────────────────────── */
-      .field { margin-bottom: 1.2rem; }
+      .field { margin-bottom: 0.85rem; }
 
       label {
         display: block;
-        font-size: 0.74rem;
+        font-size: 0.7rem;
         font-weight: 600;
-        letter-spacing: 0.09em;
+        letter-spacing: 0.08em;
         text-transform: uppercase;
         color: rgba(255,255,255,0.38);
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.35rem;
       }
 
       input {
         width: 100%;
-        padding: 0.82rem 1.1rem;
-        font-size: 0.95rem;
+        padding: 0.65rem 0.95rem;
+        font-size: 0.9rem;
         font-family: inherit;
         background: rgba(255,255,255,0.045);
         border: 1px solid rgba(255,255,255,0.08);
-        border-radius: 0.9rem;
+        border-radius: 0.75rem;
         color: #fff;
         outline: none;
         transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
@@ -249,9 +249,9 @@
       .check-field {
         display: flex;
         align-items: flex-start;
-        gap: 0.75rem;
-        margin-bottom: 1.4rem;
-        margin-top: 0.4rem;
+        gap: 0.65rem;
+        margin-bottom: 1rem;
+        margin-top: 0.25rem;
       }
 
       .check-field input[type="checkbox"] {
@@ -278,15 +278,15 @@
       }
 
       .submit-btn {
-        margin-top: 0.5rem;
+        margin-top: 0.4rem;
         width: 100%;
-        padding: 0.9rem;
-        font-size: 0.95rem;
+        padding: 0.75rem;
+        font-size: 0.9rem;
         font-family: inherit;
         font-weight: 600;
         letter-spacing: 0.02em;
         border: none;
-        border-radius: 0.9rem;
+        border-radius: 0.75rem;
         cursor: pointer;
         background: linear-gradient(135deg, #7c5cfc 0%, #a78bfa 100%);
         color: #fff;
@@ -321,8 +321,8 @@
 
       /* ── COUNTER / PROGRESS ────────────────────────────── */
       .counter-section {
-        margin-top: 2rem;
-        padding-top: 1.5rem;
+        margin-top: 1.4rem;
+        padding-top: 1.1rem;
         border-top: 1px solid rgba(255,255,255,0.06);
       }
 
@@ -373,6 +373,19 @@
         color: rgba(255,255,255,0.22);
         letter-spacing: 0.04em;
         font-style: italic;
+      }
+
+      /* ── RESPONSIVE ────────────────────────────────────── */
+      @media (max-width: 600px) {
+        .card {
+          width: 100%;
+          padding: 1.75rem 1.5rem;
+          border-radius: 1.25rem;
+        }
+        h1 { font-size: 1.45rem; }
+        input { padding: 0.6rem 0.85rem; font-size: 0.875rem; }
+        .submit-btn { padding: 0.7rem; font-size: 0.875rem; }
+        .field { margin-bottom: 0.75rem; }
       }
     </style>
   </head>
