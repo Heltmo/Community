@@ -1888,9 +1888,12 @@
            ARRANGEMENTER
            ══════════════════════════════════════════════════ -->
       <div class="section" id="sec-turneringer">
-        <div class="page-header">
-          <div class="page-title">Arrangementer</div>
-          <div class="events-intro">Her finner du kommende aktiviteter og arrangementer i UngOgAktiveNorge.</div>
+        <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;">
+          <div>
+            <div class="page-title">Arrangementer</div>
+            <div class="events-intro">Her finner du kommende aktiviteter og arrangementer i UngOgAktiveNorge.</div>
+          </div>
+          <button class="btn btn-primary" id="proposeBtn" style="margin-top:0.5rem;white-space:nowrap;">+ Foreslå arrangement</button>
         </div>
 
         <div class="events-page">
@@ -1933,6 +1936,36 @@
 
         </div>
 
+        <!-- Propose modal -->
+        <div class="modal-overlay hidden" id="proposeModal">
+          <div class="propose-modal">
+            <button class="modal-close-btn" id="proposeModalClose">✕</button>
+            <div class="modal-title">Foreslå arrangement</div>
+            <div class="modal-subtitle">Forslaget sendes til admin for godkjenning før det publiseres</div>
+            <div class="form-row">
+              <div class="form-field">
+                <label class="form-label" for="prop-title">Tittel</label>
+                <input class="form-input" id="prop-title" type="text" placeholder="Navn på arrangementet">
+              </div>
+              <div class="form-field">
+                <label class="form-label" for="prop-date">Dato</label>
+                <input class="form-input" id="prop-date" type="date">
+              </div>
+            </div>
+            <div class="form-field">
+              <label class="form-label" for="prop-location">Sted</label>
+              <input class="form-input" id="prop-location" type="text" placeholder="F.eks. Halden kulturhus">
+            </div>
+            <div class="form-field">
+              <label class="form-label" for="prop-desc">Beskrivelse</label>
+              <textarea class="form-textarea" id="prop-desc" placeholder="Beskriv arrangementet…"></textarea>
+            </div>
+            <div class="form-submit-row">
+              <button class="btn btn-ghost" id="proposeCancel">Avbryt</button>
+              <button class="btn btn-primary" id="proposeSubmit">Send forslag</button>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- ══════════════════════════════════════════════════
@@ -2918,6 +2951,42 @@ if (name === 'settings')    loadSettingsData();
       document.getElementById('eventDetailBack').addEventListener('click', () => {
         document.getElementById('eventsGridView').style.display = '';
         document.getElementById('eventDetailView').classList.remove('active');
+      });
+
+      // ── Propose modal ─────────────────────────────────────
+      document.getElementById('proposeBtn').addEventListener('click', () => {
+        document.getElementById('proposeModal').classList.remove('hidden');
+      });
+      document.getElementById('proposeModalClose').addEventListener('click', () => {
+        document.getElementById('proposeModal').classList.add('hidden');
+      });
+      document.getElementById('proposeCancel').addEventListener('click', () => {
+        document.getElementById('proposeModal').classList.add('hidden');
+      });
+      document.getElementById('proposeModal').addEventListener('click', function (e) {
+        if (e.target === this) this.classList.add('hidden');
+      });
+      document.getElementById('proposeSubmit').addEventListener('click', async () => {
+        const title    = document.getElementById('prop-title').value.trim();
+        const date     = document.getElementById('prop-date').value;
+        const location = document.getElementById('prop-location').value.trim();
+        const desc     = document.getElementById('prop-desc').value.trim();
+        if (!title) { document.getElementById('prop-title').focus(); return; }
+        const btn = document.getElementById('proposeSubmit');
+        btn.disabled = true; btn.textContent = 'Sender…';
+        const { error } = await db.from('event_proposals').insert({
+          member_id:   currentMember.id,
+          title,
+          description: desc || null,
+          location:    location || null,
+          event_date:  date || null,
+          status:      'pending',
+        });
+        btn.disabled = false; btn.textContent = 'Send forslag';
+        if (error) { alert(dashboardErrorMessage('create-proposal', error)); return; }
+        document.getElementById('proposeModal').classList.add('hidden');
+        ['prop-title','prop-date','prop-location','prop-desc'].forEach(id => { document.getElementById(id).value = ''; });
+        alert('Forslaget ditt er sendt inn! Admin vil behandle det.');
       });
 
       // ── RESULTATER ────────────────────────────────────────
