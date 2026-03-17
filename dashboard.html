@@ -2619,14 +2619,12 @@ if (name === 'settings')    loadSettingsData();
         if (likeBtn && likeCountEl) {
           const prev = parseInt(likeCountEl.textContent) || 0;
           const next = currentlyLiked ? Math.max(0, prev - 1) : prev + 1;
-          likeCountEl.textContent = next;
           likeBtn.classList.toggle('liked', !currentlyLiked);
           likeBtn.innerHTML = (currentlyLiked ? '🤍' : '❤️')
             + ' <span class="like-count">' + next + '</span>';
-          // Re-wire so the next click reflects the new state
-          likeBtn.onclick = async function () {
-            await togglePostLike(postId, this.classList.contains('liked'));
-          };
+          // NOTE: do NOT set likeBtn.onclick here — wireFeedEvents already
+          // attached an addEventListener that reads .liked class dynamically.
+          // Setting onclick would create a second handler and double-fire.
         }
 
         // ── Persist to DB ─────────────────────────────────────
@@ -2637,17 +2635,14 @@ if (name === 'settings')    loadSettingsData();
           const { error } = await db.from('community_post_likes')
             .insert({ post_id: Number(postId), user_id: currentSession.user.id });
           if (error) {
-            // Revert optimistic update if the table doesn't exist yet
+            // Revert optimistic update on DB error
             console.error('like error:', error);
-            if (likeBtn && likeCountEl) {
-              const prev = parseInt(likeCountEl.textContent) || 0;
-              likeCountEl.textContent = currentlyLiked ? prev + 1 : Math.max(0, prev - 1);
+            if (likeBtn) {
+              const revertCount = parseInt(likeBtn.querySelector('.like-count')?.textContent) || 0;
+              const reverted = currentlyLiked ? revertCount + 1 : Math.max(0, revertCount - 1);
               likeBtn.classList.toggle('liked', currentlyLiked);
               likeBtn.innerHTML = (currentlyLiked ? '❤️' : '🤍')
-                + ' <span class="like-count">' + likeCountEl.textContent + '</span>';
-              likeBtn.onclick = async function () {
-                await togglePostLike(postId, this.classList.contains('liked'));
-              };
+                + ' <span class="like-count">' + reverted + '</span>';
             }
           }
         }
@@ -2763,6 +2758,13 @@ if (name === 'settings')    loadSettingsData();
 
       async function deleteComment(commentId, postId) {
         await db.from('community_posts').delete().eq('id', commentId);
+        // Update comment button count
+        const commentBtn = document.querySelector('.comment-btn[data-id="' + postId + '"]');
+        if (commentBtn) {
+          const prev = parseInt(commentBtn.textContent.replace(/\D/g, '')) || 0;
+          const next = Math.max(0, prev - 1);
+          commentBtn.innerHTML = next > 0 ? '💬 ' + next : '💬 Kommenter';
+        }
         loadComments(postId);
       }
 
