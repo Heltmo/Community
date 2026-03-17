@@ -525,91 +525,92 @@
       .db-section-link:hover { color: #a78bfa; }
 
       /* ══════════════════════════════════════════════════
-         SISTE FRA FELLESSKAPET — 3 equal image cards
+         SISTE FRA FELLESSKAPET — social post cards
          ══════════════════════════════════════════════════ */
       .community-cards {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 1.4rem;
+        gap: 1.2rem;
       }
 
       .comm-card {
-        background: rgba(255,255,255,0.03);
+        background: rgba(255,255,255,0.034);
         border: 1px solid rgba(255,255,255,0.07);
         border-radius: 1.1rem;
         overflow: hidden;
+        display: flex; flex-direction: column;
         transition: border-color 0.2s, transform 0.2s;
         cursor: default;
       }
-      .comm-card:hover { border-color: rgba(255,255,255,0.13); transform: translateY(-2px); }
+      .comm-card:hover { border-color: rgba(167,139,250,0.28); transform: translateY(-2px); }
 
-      .comm-card-photo {
-        height: 190px;
-        display: flex; align-items: flex-end; justify-content: flex-start;
-        padding: 0.85rem;
-        position: relative;
-        overflow: hidden;
-      }
-      .comm-card-photo::after {
-        content: '';
-        position: absolute; inset: 0;
-        background: linear-gradient(to top, rgba(8,7,20,0.75) 0%, rgba(8,7,20,0.1) 60%, transparent 100%);
-      }
+      /* Accent bar on top */
+      .comm-card::before { content: ''; height: 3px; display: block; }
+      .cp-1::before { background: linear-gradient(90deg, #7c5cfc, #a78bfa); }
+      .cp-2::before { background: linear-gradient(90deg, #06b6d4, #22d3ee); }
+      .cp-3::before { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
 
-      /* photo gradient variants */
-      .cp-1 { background: linear-gradient(145deg, #1a1060 0%, #2d1b69 40%, #0f1f4a 100%); }
-      .cp-2 { background: linear-gradient(145deg, #0d2c1e 0%, #1a4a2e 40%, #0a2818 100%); }
-      .cp-3 { background: linear-gradient(145deg, #2a1a08 0%, #4a2e0a 40%, #3a2005 100%); }
-
-      .comm-card-photo-icon {
-        position: relative; z-index: 1;
-        font-size: 1.8rem; opacity: 0.4;
-      }
-
-      .comm-card-body { padding: 1.25rem 1.4rem; }
+      .comm-card-body { padding: 1.1rem 1.3rem 0; flex: 1; display: flex; flex-direction: column; }
 
       .comm-card-meta {
-        display: flex; align-items: center; gap: 0.6rem;
-        margin-bottom: 0.55rem;
+        display: flex; align-items: center; gap: 0.55rem;
+        margin-bottom: 0.7rem;
       }
       .comm-card-avatar {
-        width: 26px; height: 26px; border-radius: 50%;
+        width: 30px; height: 30px; border-radius: 50%;
         background: linear-gradient(135deg, #7c5cfc, #a78bfa);
         display: flex; align-items: center; justify-content: center;
-        font-size: 0.62rem; font-weight: 700; color: #fff; flex-shrink: 0;
+        font-size: 0.65rem; font-weight: 700; color: #fff; flex-shrink: 0;
       }
-      .comm-card-author { font-size: 0.78rem; font-weight: 600; color: rgba(255,255,255,0.7); }
-      .comm-card-sep    { font-size: 0.7rem; color: rgba(255,255,255,0.2); }
-      .comm-card-time   { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
+      .comm-card-author { font-size: 0.82rem; font-weight: 600; color: rgba(255,255,255,0.82); }
+      .comm-card-time   { font-size: 0.7rem; color: rgba(255,255,255,0.3); margin-left: auto; white-space: nowrap; }
       .comm-card-sys-badge {
-        font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em;
+        font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em;
         color: #a78bfa; background: rgba(167,139,250,0.12);
-        padding: 0.1rem 0.38rem; border-radius: 3px;
+        padding: 0.12rem 0.4rem; border-radius: 3px;
       }
 
       .comm-card-text {
-        font-size: 0.82rem; color: rgba(255,255,255,0.62);
-        line-height: 1.6;
-        display: -webkit-box; -webkit-line-clamp: 3;
+        font-size: 0.84rem; color: rgba(255,255,255,0.58);
+        line-height: 1.65; flex: 1;
+        display: -webkit-box; -webkit-line-clamp: 4;
         -webkit-box-orient: vertical; overflow: hidden;
-        margin-bottom: 0;
       }
       .comm-card-footer {
         display: flex; align-items: center; justify-content: space-between;
-        padding: 0.75rem 1.4rem 1rem;
+        padding: 0.7rem 1.3rem 0.9rem;
         border-top: 1px solid rgba(255,255,255,0.05);
         margin-top: 0.75rem;
       }
       .comm-card-counts {
-        display: flex; gap: 0.85rem; font-size: 0.73rem; color: rgba(255,255,255,0.25);
+        display: flex; gap: 0.75rem; font-size: 0.72rem; color: rgba(255,255,255,0.28);
       }
       .comm-card-count-item { display: flex; align-items: center; gap: 0.28rem; }
       .comm-card-goto {
-        font-size: 0.73rem; font-weight: 600; color: rgba(167,139,250,0.65);
+        font-size: 0.72rem; font-weight: 600; color: rgba(167,139,250,0.65);
         background: none; border: none; cursor: pointer; font-family: inherit;
         padding: 0; transition: color 0.15s;
       }
       .comm-card-goto:hover { color: #a78bfa; }
+
+      /* ── Compact empty invite — used by mine innlegg + aktiviteter ── */
+      .empty-invite {
+        text-align: center; padding: 1.75rem 1.5rem;
+        border-radius: 1rem;
+        background: rgba(255,255,255,0.02);
+        border: 1px dashed rgba(255,255,255,0.08);
+      }
+      .empty-invite-icon { font-size: 1.8rem; display: block; margin-bottom: 0.65rem; opacity: 0.4; }
+      .empty-invite-title { font-size: 0.9rem; font-weight: 700; color: rgba(255,255,255,0.65); margin-bottom: 0.3rem; }
+      .empty-invite-text { font-size: 0.79rem; color: rgba(255,255,255,0.3); line-height: 1.6; max-width: 280px; margin: 0 auto 1rem; }
+      .empty-invite-btn {
+        display: inline-flex; align-items: center; gap: 0.38rem;
+        padding: 0.52rem 1.1rem;
+        background: rgba(167,139,250,0.1); border: 1px solid rgba(167,139,250,0.22);
+        border-radius: 0.6rem; font-size: 0.8rem; font-weight: 600; color: #c4b5fd;
+        cursor: pointer; font-family: inherit; transition: background 0.15s, border-color 0.15s;
+      }
+      .empty-invite-btn:hover { background: rgba(167,139,250,0.18); border-color: rgba(167,139,250,0.38); }
 
       /* ══════════════════════════════════════════════════
          COMMUNITY PAGE
@@ -910,19 +911,34 @@
         letter-spacing: 0.13em; color: rgba(255,255,255,0.28); margin-bottom: 0.85rem;
       }
       .my-post-item {
-        padding: 0.9rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+        padding: 1rem 1.2rem;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 0.85rem;
+        margin-bottom: 0.6rem;
+        transition: border-color 0.15s;
       }
-      .my-post-item:last-child { border-bottom: none; }
-      .my-post-time { font-size: 0.7rem; color: rgba(255,255,255,0.22); margin-bottom: 0.25rem; }
-      .my-post-text { font-size: 0.86rem; color: rgba(255,255,255,0.55); line-height: 1.55; }
+      .my-post-item:last-child { margin-bottom: 0; }
+      .my-post-item:hover { border-color: rgba(255,255,255,0.12); }
+      .my-post-time { font-size: 0.68rem; color: rgba(255,255,255,0.28); margin-bottom: 0.3rem; }
+      .my-post-text {
+        font-size: 0.85rem; color: rgba(255,255,255,0.6); line-height: 1.6;
+        display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+      }
       .my-activity-item {
         display: flex; align-items: center; justify-content: space-between;
-        padding: 0.85rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+        padding: 0.9rem 1.2rem;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 0.85rem;
+        margin-bottom: 0.6rem;
         gap: 1rem;
+        transition: border-color 0.15s;
       }
-      .my-activity-item:last-child { border-bottom: none; }
-      .my-activity-title { font-size: 0.875rem; font-weight: 600; color: rgba(255,255,255,0.75); }
-      .my-activity-date  { font-size: 0.75rem; color: rgba(255,255,255,0.3); margin-top: 0.15rem; }
+      .my-activity-item:last-child { margin-bottom: 0; }
+      .my-activity-item:hover { border-color: rgba(255,255,255,0.12); }
+      .my-activity-title { font-size: 0.875rem; font-weight: 600; color: rgba(255,255,255,0.78); }
+      .my-activity-date  { font-size: 0.72rem; color: rgba(255,255,255,0.3); margin-top: 0.2rem; }
 
       .feed-post { padding: 1rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
       .feed-post:last-child { border-bottom: none; }
@@ -1762,7 +1778,7 @@
               <span class="db-section-title">Mine innlegg</span>
               <button class="db-section-link" id="dashGoToFellBtn">Gå til Fellesskapet</button>
             </div>
-            <div class="dash-card" id="myPostsList"><div class="loading">Laster…</div></div>
+            <div id="myPostsList"><div class="loading">Laster…</div></div>
           </div>
 
           <!-- ── MINE AKTIVITETER ───────────────────────────── -->
@@ -1771,7 +1787,7 @@
               <span class="db-section-title">Mine aktiviteter</span>
               <button class="db-section-link" id="dashGoToEventsBtn">Se arrangementer</button>
             </div>
-            <div class="dash-card" id="myActivitiesList"><div class="loading">Laster…</div></div>
+            <div id="myActivitiesList"><div class="loading">Laster…</div></div>
           </div>
 
           <!-- ── PRAKTISK INFORMASJON ───────────────────────── -->
@@ -2379,10 +2395,10 @@ if (name === 'settings')    loadSettingsData();
         const el = document.getElementById('communityPreview');
         if (!data?.length) {
           el.innerHTML =
-            '<div class="empty-state">'
+            '<div class="empty-state" style="grid-column:1/-1;">'
             + '<div class="empty-state-icon">💬</div>'
-            + '<div class="empty-state-title">Ingen innlegg i UAN ennå</div>'
-            + '<div class="empty-state-text">Når medlemmer deler oppdateringer og tanker i Fellesskapet, vises de her. Vær den første som starter noe.</div>'
+            + '<div class="empty-state-title">Ingen innlegg ennå</div>'
+            + '<div class="empty-state-text">Vær den første til å dele noe med fellesskapet.</div>'
             + '<button class="empty-state-btn" id="communityPreviewEmptyBtn">Gå til Fellesskapet →</button>'
             + '</div>';
           document.getElementById('communityPreviewEmptyBtn')
@@ -2410,16 +2426,12 @@ if (name === 'settings')    loadSettingsData();
           const lc       = likeCounts[p.id] || 0;
           const cc       = commentCounts[p.id] || 0;
 
-          return '<div class="comm-card" data-postid="' + p.id + '">'
-            + '<div class="comm-card-photo ' + CP_CLASSES[i % 3] + '">'
-            + '<span class="comm-card-photo-icon">' + CP_ICONS[i % 3] + '</span>'
-            + '</div>'
+          return '<div class="comm-card ' + CP_CLASSES[i % 3] + '" data-postid="' + p.id + '">'
             + '<div class="comm-card-body">'
             + '<div class="comm-card-meta">'
             + '<div class="comm-card-avatar">' + initials + '</div>'
             + '<span class="comm-card-author">' + author + '</span>'
             + (sys ? '<span class="comm-card-sys-badge">System</span>' : '')
-            + '<span class="comm-card-sep">|</span>'
             + '<span class="comm-card-time">' + timeAgo(p.created_at) + '</span>'
             + '</div>'
             + '<div class="comm-card-text">' + escHtml(p.content) + '</div>'
@@ -3324,11 +3336,11 @@ if (name === 'settings')    loadSettingsData();
           .order('created_at', { ascending: false }).limit(10);
         if (!data?.length) {
           el.innerHTML =
-            '<div style="text-align:center;padding:2rem 1.5rem;">'
-            + '<div style="font-size:2rem;margin-bottom:0.85rem;opacity:0.35;">✍️</div>'
-            + '<div style="font-size:0.92rem;font-weight:700;color:rgba(255,255,255,0.62);margin-bottom:0.4rem;">Du har ikke publisert noe ennå</div>'
-            + '<div style="font-size:0.82rem;color:rgba(255,255,255,0.3);line-height:1.65;max-width:320px;margin:0 auto 1.25rem;">Del noe i Fellesskapet, og innleggene dine vil vises her.</div>'
-            + '<button class="btn btn-ghost btn-sm" id="myPostsEmptyBtn">Gå til Fellesskapet</button>'
+            '<div class="empty-invite">'
+            + '<span class="empty-invite-icon">✍️</span>'
+            + '<div class="empty-invite-title">Ingen innlegg ennå</div>'
+            + '<div class="empty-invite-text">Del noe i Fellesskapet — tanker, oppdateringer, bilder. Innleggene dine vises her.</div>'
+            + '<button class="empty-invite-btn" id="myPostsEmptyBtn">Del noe nå →</button>'
             + '</div>';
           document.getElementById('myPostsEmptyBtn').addEventListener('click', () => showSection('community'));
           return;
@@ -3350,11 +3362,11 @@ if (name === 'settings')    loadSettingsData();
           .order('created_at', { ascending: false }).limit(10);
         if (!data?.length) {
           el.innerHTML =
-            '<div style="text-align:center;padding:2rem 1.5rem;">'
-            + '<div style="font-size:2rem;margin-bottom:0.85rem;opacity:0.35;">🏃</div>'
-            + '<div style="font-size:0.92rem;font-weight:700;color:rgba(255,255,255,0.62);margin-bottom:0.4rem;">Du har ikke meldt deg på aktiviteter ennå</div>'
-            + '<div style="font-size:0.82rem;color:rgba(255,255,255,0.3);line-height:1.65;max-width:320px;margin:0 auto 1.25rem;">Meld deg på arrangementer, og aktivitetene dine vil vises her.</div>'
-            + '<button class="btn btn-ghost btn-sm" id="myActivitiesEmptyBtn">Se arrangementer</button>'
+            '<div class="empty-invite">'
+            + '<span class="empty-invite-icon">🏃</span>'
+            + '<div class="empty-invite-title">Ingen aktiviteter ennå</div>'
+            + '<div class="empty-invite-text">Meld deg på et arrangement og hold oversikten over dine aktiviteter her.</div>'
+            + '<button class="empty-invite-btn" id="myActivitiesEmptyBtn">Se arrangementer →</button>'
             + '</div>';
           document.getElementById('myActivitiesEmptyBtn').addEventListener('click', () => showSection('turneringer'));
           return;
