@@ -272,3 +272,30 @@ CREATE POLICY "messages_select" ON messages FOR SELECT TO authenticated
   ));
 CREATE POLICY "messages_insert" ON messages FOR INSERT TO authenticated
   WITH CHECK (author_id = auth.uid());
+
+-- ── 8. MEMBER GOAL SETTINGS ───────────────────────────────────
+-- Single-row settings table (id = 1 always)
+CREATE TABLE IF NOT EXISTS member_goal_settings (
+  id               INTEGER     PRIMARY KEY DEFAULT 1,
+  title            TEXT        NOT NULL DEFAULT 'Medlemsmål',
+  current_count    INTEGER     NOT NULL DEFAULT 0,
+  target_count     INTEGER     NOT NULL DEFAULT 200,
+  description      TEXT        NOT NULL DEFAULT 'Ett mål. Ett fellesskap. Ett gjennombrudd.',
+  is_visible       BOOLEAN     NOT NULL DEFAULT true,
+  show_on_register BOOLEAN     NOT NULL DEFAULT true,
+  show_on_login    BOOLEAN     NOT NULL DEFAULT true,
+  updated_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Seed the default row
+INSERT INTO member_goal_settings (id) VALUES (1) ON CONFLICT DO NOTHING;
+
+-- RLS: anyone can read (needed by auth pages without a session),
+--      authenticated users (admin) can update
+ALTER TABLE member_goal_settings ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "mgs_select" ON member_goal_settings;
+DROP POLICY IF EXISTS "mgs_update" ON member_goal_settings;
+DROP POLICY IF EXISTS "mgs_insert" ON member_goal_settings;
+CREATE POLICY "mgs_select" ON member_goal_settings FOR SELECT USING (true);
+CREATE POLICY "mgs_update" ON member_goal_settings FOR UPDATE TO authenticated USING (true);
+CREATE POLICY "mgs_insert" ON member_goal_settings FOR INSERT TO authenticated WITH CHECK (true);

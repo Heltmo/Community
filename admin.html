@@ -209,6 +209,9 @@
       <div class="nav-item" data-section="viktig-na"><span class="icon">✦</span> Viktig nå</div>
       <div class="nav-item" data-section="resultater"><span class="icon">★</span> Resultater</div>
 
+      <span class="nav-section">Innstillinger</span>
+      <div class="nav-item" data-section="medlemsmal"><span class="icon">◎</span> Medlemsmål</div>
+
       <span class="nav-section">Brukere</span>
       <div class="nav-item" data-section="brukere"><span class="icon">◎</span> Brukere</div>
 
@@ -432,6 +435,105 @@
         </div>
       </div>
 
+      <!-- ══ MEDLEMSMÅL ══════════════════════════════════════ -->
+      <div class="section" id="sec-medlemsmal">
+        <div class="page-header">
+          <div class="page-title">Medlemsmål</div>
+          <div class="page-subtitle">Konfigurer målbanneret på registrerings- og innloggingssidene</div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 380px;gap:1.25rem;align-items:start;">
+
+          <!-- Left: form -->
+          <div>
+            <div class="card" style="margin-bottom:1.25rem;">
+              <div class="card-header"><span class="card-title">Rediger innhold</span></div>
+
+              <div class="form-field">
+                <label class="form-label">Tittel</label>
+                <input class="form-input" id="mgTitle" placeholder="Medlemsmål" />
+              </div>
+
+              <div class="form-grid">
+                <div class="form-field">
+                  <label class="form-label">Nåværende antall</label>
+                  <input class="form-input" type="number" id="mgCurrent" placeholder="0" min="0" />
+                </div>
+                <div class="form-field">
+                  <label class="form-label">Målantall</label>
+                  <input class="form-input" type="number" id="mgTarget" placeholder="200" min="1" />
+                </div>
+              </div>
+
+              <div class="form-field">
+                <label class="form-label">Beskrivelse</label>
+                <input class="form-input" id="mgDesc" placeholder="Ett mål. Ett fellesskap. Ett gjennombrudd." />
+              </div>
+
+              <div class="form-field" style="flex-direction:row;align-items:center;gap:0.75rem;margin-bottom:0;">
+                <label class="form-label" style="margin:0;" for="mgVisible">Vis seksjonen</label>
+                <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;">
+                  <input type="checkbox" id="mgVisible" style="width:16px;height:16px;accent-color:#f59e0b;cursor:pointer;" />
+                  <span style="font-size:0.8rem;color:rgba(255,255,255,0.45);">Aktiv</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="card" style="margin-bottom:1.25rem;">
+              <div class="card-header"><span class="card-title">Plassering</span></div>
+              <p style="font-size:0.78rem;color:rgba(255,255,255,0.3);margin-bottom:1rem;">Velg hvilke sider Medlemsmål vises på.</p>
+
+              <div style="display:flex;flex-direction:column;gap:0.75rem;">
+                <label style="display:flex;align-items:center;gap:0.75rem;cursor:pointer;padding:0.75rem 1rem;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:0.65rem;">
+                  <input type="checkbox" id="mgShowRegister" style="width:16px;height:16px;accent-color:#f59e0b;cursor:pointer;" />
+                  <div>
+                    <div style="font-size:0.84rem;font-weight:600;color:rgba(255,255,255,0.75);">Bli medlem</div>
+                    <div style="font-size:0.72rem;color:rgba(255,255,255,0.3);">Registreringssiden (index.html)</div>
+                  </div>
+                </label>
+                <label style="display:flex;align-items:center;gap:0.75rem;cursor:pointer;padding:0.75rem 1rem;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:0.65rem;">
+                  <input type="checkbox" id="mgShowLogin" style="width:16px;height:16px;accent-color:#f59e0b;cursor:pointer;" />
+                  <div>
+                    <div style="font-size:0.84rem;font-weight:600;color:rgba(255,255,255,0.75);">Logg inn</div>
+                    <div style="font-size:0.72rem;color:rgba(255,255,255,0.3);">Innloggingssiden (login.html)</div>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <div class="form-row-actions">
+              <button class="btn btn-ghost" id="mgCancelBtn">Avbryt</button>
+              <button class="btn btn-amber" id="mgSaveBtn">Lagre endringer</button>
+            </div>
+          </div>
+
+          <!-- Right: preview -->
+          <div>
+            <div class="card">
+              <div class="card-header"><span class="card-title">Forhåndsvisning</span></div>
+              <p style="font-size:0.72rem;color:rgba(255,255,255,0.25);margin-bottom:1.25rem;">Slik ser det ut på auth-sidene.</p>
+
+              <div style="background:rgba(12,12,22,0.8);border:1px solid rgba(255,255,255,0.09);border-radius:1rem;padding:1.25rem;">
+                <!-- preview widget -->
+                <div style="padding-top:1rem;border-top:1px solid rgba(255,255,255,0.06);">
+                  <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:0.7rem;">
+                    <span style="font-size:0.74rem;font-weight:600;letter-spacing:0.09em;text-transform:uppercase;color:rgba(255,255,255,0.32);" id="previewTitle">MEDLEMSMÅL</span>
+                    <span style="font-size:0.88rem;font-weight:600;color:rgba(255,255,255,0.55);" id="previewNumbers"><span style="color:#a78bfa;" id="previewCurrent">1</span> / <span id="previewRemaining">199</span></span>
+                  </div>
+                  <div style="height:5px;background:rgba(255,255,255,0.07);border-radius:99px;overflow:hidden;">
+                    <div id="previewFill" style="height:100%;width:0%;background:linear-gradient(90deg,#7c5cfc,#a78bfa);border-radius:99px;transition:width 0.4s ease;"></div>
+                  </div>
+                  <p style="margin-top:0.65rem;font-size:0.75rem;color:rgba(255,255,255,0.22);letter-spacing:0.04em;font-style:italic;" id="previewDesc">Ett mål. Ett fellesskap. Ett gjennombrudd.</p>
+                </div>
+              </div>
+
+              <div id="mgStatus" style="margin-top:1rem;font-size:0.78rem;color:rgba(255,255,255,0.3);"></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
     </main>
 
     <!-- ══ PROPOSAL DETAIL MODAL ══════════════════════════ -->
@@ -499,6 +601,7 @@
           'viktig-na':    loadViktigNaAdmin,
           resultater:     loadResultater,
           brukere:        loadBrukere,
+          medlemsmal:     loadMedlemsmal,
         };
         loaders[name]?.();
       }
@@ -1046,6 +1149,111 @@
           loadResultater();
         });
       }
+
+      // ══ MEDLEMSMÅL ═══════════════════════════════════════
+      let _mgOriginal = null;
+
+      async function loadMedlemsmal() {
+        const status = document.getElementById('mgStatus');
+        status.textContent = 'Laster…';
+
+        const { data, error } = await db
+          .from('member_goal_settings')
+          .select('*')
+          .eq('id', 1)
+          .single();
+
+        if (error && error.code !== 'PGRST116') {
+          status.textContent = 'Feil ved lasting: ' + (error.message || 'ukjent feil');
+          return;
+        }
+
+        const defaults = {
+          id: 1, title: 'Medlemsmål', current_count: 0, target_count: 200,
+          description: 'Ett mål. Ett fellesskap. Ett gjennombrudd.',
+          is_visible: true, show_on_register: true, show_on_login: true,
+        };
+
+        _mgOriginal = data ? { ...defaults, ...data } : { ...defaults };
+        fillMgForm(_mgOriginal);
+        status.textContent = '';
+      }
+
+      function fillMgForm(d) {
+        document.getElementById('mgTitle').value      = d.title;
+        document.getElementById('mgCurrent').value    = d.current_count;
+        document.getElementById('mgTarget').value     = d.target_count;
+        document.getElementById('mgDesc').value       = d.description;
+        document.getElementById('mgVisible').checked  = d.is_visible;
+        document.getElementById('mgShowRegister').checked = d.show_on_register;
+        document.getElementById('mgShowLogin').checked    = d.show_on_login;
+        updateMgPreview(d);
+      }
+
+      function updateMgPreview(d) {
+        const cur  = parseInt(d.current_count, 10)  || 0;
+        const tgt  = parseInt(d.target_count, 10)   || 200;
+        const rem  = Math.max(tgt - cur, 0);
+        const pct  = Math.min(Math.round((cur / Math.max(tgt, 1)) * 100), 100);
+        document.getElementById('previewTitle').textContent     = (d.title || 'Medlemsmål').toUpperCase();
+        document.getElementById('previewCurrent').textContent   = cur;
+        document.getElementById('previewRemaining').textContent = rem;
+        document.getElementById('previewDesc').textContent      = d.description || '';
+        document.getElementById('previewFill').style.width      = pct + '%';
+      }
+
+      // Live preview on input change
+      ['mgTitle','mgCurrent','mgTarget','mgDesc'].forEach(id => {
+        document.getElementById(id).addEventListener('input', () => {
+          updateMgPreview(getMgFormValues());
+        });
+      });
+
+      function getMgFormValues() {
+        return {
+          title:            document.getElementById('mgTitle').value.trim() || 'Medlemsmål',
+          current_count:    parseInt(document.getElementById('mgCurrent').value, 10) || 0,
+          target_count:     parseInt(document.getElementById('mgTarget').value, 10)  || 200,
+          description:      document.getElementById('mgDesc').value.trim(),
+          is_visible:       document.getElementById('mgVisible').checked,
+          show_on_register: document.getElementById('mgShowRegister').checked,
+          show_on_login:    document.getElementById('mgShowLogin').checked,
+        };
+      }
+
+      document.getElementById('mgCancelBtn').addEventListener('click', () => {
+        if (_mgOriginal) fillMgForm(_mgOriginal);
+      });
+
+      document.getElementById('mgSaveBtn').addEventListener('click', async () => {
+        const btn    = document.getElementById('mgSaveBtn');
+        const status = document.getElementById('mgStatus');
+        const values = getMgFormValues();
+
+        btn.disabled    = true;
+        btn.textContent = 'Lagrer…';
+        status.textContent = '';
+
+        const payload = { ...values, id: 1, updated_at: new Date().toISOString() };
+
+        // Upsert single settings row (id = 1)
+        const { error } = await db
+          .from('member_goal_settings')
+          .upsert(payload, { onConflict: 'id' });
+
+        btn.disabled    = false;
+        btn.textContent = 'Lagre endringer';
+
+        if (error) {
+          status.style.color = 'rgba(248,113,113,0.9)';
+          status.textContent = 'Feil: ' + (error.message || 'ukjent feil');
+        } else {
+          _mgOriginal = { ...payload };
+          status.style.color = 'rgba(52,211,153,0.9)';
+          status.textContent = '✓ Endringer lagret';
+          setTimeout(() => { status.textContent = ''; }, 3000);
+        }
+      });
 
       // ══ BRUKERE ══════════════════════════════════════════
       document.getElementById('usersReloadBtn').addEventListener('click', loadBrukere);

@@ -150,11 +150,15 @@
         <button type="submit">Send innloggingslenke</button>
       </form>
 
+      <!-- ── MEMBER GOAL (shared component) ──────────────── -->
+      <div id="memberGoalMount"></div>
+
       <p class="footer-note">Ikke medlem ennå? <a href="index.html">Bli medlem</a></p>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <script src="js/brim.js"></script>
+    <script src="js/memberGoal.js"></script>
     <script>
       // Video montage
       (function () {
@@ -171,6 +175,9 @@
 
       // Redirect if already logged in
       getSession().then(s => { if (s) window.location.href = 'dashboard.html'; });
+
+      // Member goal component
+      initMemberGoal('login', 'memberGoalMount');
 
       function authErrorMessage(error) {
         const msg = String(error?.message || '').toLowerCase();
