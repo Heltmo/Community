@@ -2293,9 +2293,12 @@ if (name === 'settings')    loadSettingsData();
 
         currentMember = await getMember(currentSession.user.id);
 
-        const initials = currentMember?.name?.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase() || '?';
+        const memberName = currentMember?.name?.trim() || '';
+        const initials   = memberName
+          ? memberName.split(' ').map(w => w[0]).filter(Boolean).join('').slice(0,2).toUpperCase()
+          : '?';
         document.getElementById('sidebarAvatar').textContent  = initials;
-        document.getElementById('sidebarName').textContent    = currentMember?.name || '—';
+        document.getElementById('sidebarName').textContent    = memberName || '—';
         document.getElementById('sidebarRole').textContent    = currentMember?.role === 'admin' ? 'Admin' : 'Medlem';
         if (currentMember?.role === 'admin') {
           document.getElementById('adminLink').classList.remove('hidden');
@@ -3431,10 +3434,10 @@ if (name === 'settings')    loadSettingsData();
         const previewEl = document.getElementById('settingsAvatarPreview');
 
         if (currentSession?.user?.email) emailEl.value = currentSession.user.email;
-        if (currentMember.phone)    phoneEl.value    = currentMember.phone;
-        if (currentMember.name)     nameEl.value     = currentMember.name;
-        if (currentMember.bio)      bioEl.value      = currentMember.bio;
-        if (currentMember.kommune)  kommuneEl.value  = currentMember.kommune;
+        if (currentMember.phone)        phoneEl.value    = currentMember.phone;
+        if (currentMember.name)         nameEl.value     = currentMember.name;
+        if (currentMember.bio)          bioEl.value      = currentMember.bio;
+        if (currentMember.municipality) kommuneEl.value  = currentMember.municipality;
         if (currentMember.avatar_url) {
           avatarEl.value = currentMember.avatar_url;
           previewEl.innerHTML = '<img src="' + escHtml(currentMember.avatar_url) + '" alt="avatar" />';
@@ -3494,23 +3497,26 @@ if (name === 'settings')    loadSettingsData();
         const avatar_url = document.getElementById('settingsAvatarUrl').value.trim();
 
         const { error } = await db.from('members')
-          .update({ name, bio, kommune, avatar_url: avatar_url || null })
+          .update({ name, bio, municipality: kommune, avatar_url: avatar_url || null })
           .eq('user_id', currentSession.user.id);
 
         if (error) { alert(dashboardErrorMessage('save-profile', error)); return; }
 
         if (currentMember) {
-          currentMember.name = name;
-          currentMember.bio = bio;
-          currentMember.kommune = kommune;
-          currentMember.avatar_url = avatar_url || null;
+          currentMember.name         = name;
+          currentMember.bio          = bio;
+          currentMember.municipality = kommune;
+          currentMember.avatar_url   = avatar_url || null;
         }
 
         // Re-render profile overview and sidebar
         renderProfile();
-        const initials = (name || '?').split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+        const trimmedName = name.trim();
+        const initials = trimmedName
+          ? trimmedName.split(' ').map(w => w[0]).filter(Boolean).join('').slice(0,2).toUpperCase()
+          : '?';
         document.getElementById('sidebarAvatar').textContent = initials;
-        document.getElementById('sidebarName').textContent   = name || '—';
+        document.getElementById('sidebarName').textContent   = trimmedName || '—';
 
         showSettingsToast('toastProfil');
       });
