@@ -465,12 +465,7 @@
             <input type="tel" id="loginPhone" placeholder="+47 000 00 000" autocomplete="tel" />
             <span class="error-msg" id="err-loginPhone">Telefonnummer er påkrevd.</span>
           </div>
-          <div class="field">
-            <label for="loginPassword">Passord</label>
-            <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password" />
-            <span class="error-msg" id="err-loginPassword">Passord er påkrevd.</span>
-          </div>
-          <button type="submit" class="submit-btn">Logg inn</button>
+          <button type="submit" class="submit-btn">Send innloggingslenke</button>
         </form>
 
         <p class="footer-note" style="margin-top:1.25rem;">
@@ -610,15 +605,6 @@
         document.getElementById('check-wrap').classList.remove('error');
       });
 
-      document.getElementById('loginPhone').addEventListener('input', () => {
-        document.getElementById('loginPhone').classList.remove('error');
-        document.getElementById('err-loginPhone').classList.remove('visible');
-      });
-
-      document.getElementById('loginPassword').addEventListener('input', () => {
-        document.getElementById('loginPassword').classList.remove('error');
-        document.getElementById('err-loginPassword').classList.remove('visible');
-      });
 
       document.getElementById('switchToRegister').addEventListener('click', function (e) {
         e.preventDefault();
@@ -686,33 +672,56 @@
       });
 
       /* ── LOGIN SUBMIT ──────────────────────────────────── */
+      document.getElementById('loginPhone').addEventListener('input', () => {
+        document.getElementById('loginPhone').classList.remove('error');
+        document.getElementById('err-loginPhone').classList.remove('visible');
+      });
+
       document.getElementById('loginForm').addEventListener('submit', async function (e) {
         e.preventDefault();
 
-        const phone    = document.getElementById('loginPhone').value.trim();
-        const password = document.getElementById('loginPassword').value;
-
-        fieldError('loginPhone',    'err-loginPhone',    !phone);
-        fieldError('loginPassword', 'err-loginPassword', !password);
-        if (!phone || !password) return;
+        const phone = document.getElementById('loginPhone').value.trim();
+        fieldError('loginPhone', 'err-loginPhone', !phone);
+        if (!phone) return;
 
         const btn = this.querySelector('button[type="submit"]');
         btn.disabled    = true;
-        btn.textContent = 'Logger inn…';
+        btn.textContent = 'Søker opp konto…';
 
-        const { error } = await db.auth.signInWithPassword({
-          phone: formatPhone(phone),
-          password,
-        });
+        // Look up email by phone number in members table
+        const { data: members, error: lookupErr } = await db
+          .from('members')
+          .select('email')
+          .eq('phone', formatPhone(phone))
+          .limit(1);
 
-        if (error) {
-          alert(authErrorMessage('password-login', error));
+        if (lookupErr || !members || members.length === 0) {
+          alert('Fant ingen konto med dette telefonnummeret.');
           btn.disabled    = false;
-          btn.textContent = 'Logg inn';
+          btn.textContent = 'Send innloggingslenke';
           return;
         }
 
-        window.location.href = 'dashboard.html';
+        const email = members[0].email;
+        btn.textContent = 'Sender lenke…';
+
+        const redirectTo = window.location.origin
+          + window.location.pathname.replace(/\/[^/]*$/, '/')
+          + 'auth-callback.html';
+
+        const { error } = await db.auth.signInWithOtp({
+          email,
+          options: { emailRedirectTo: redirectTo }
+        });
+
+        if (error) {
+          alert(authErrorMessage('otp-login', error));
+          btn.disabled    = false;
+          btn.textContent = 'Send innloggingslenke';
+          return;
+        }
+
+        window.location.href = 'check-email.html?email=' + encodeURIComponent(email);
       });
     </script>
   </body>
