@@ -2667,8 +2667,7 @@ if (name === 'settings')    loadSettingsData();
                 likeBtn.innerHTML = (currentlyLiked ? '❤️' : '🤍')
                   + ' <span class="like-count">' + reverted + '</span>';
               }
-              const msg = dashboardErrorMessage('like', error);
-              if (msg) alert(msg);
+              alert('Like-feil: ' + (error?.message || error?.code || JSON.stringify(error)));
             }
             // If duplicate (already liked): optimistic update already shows correct state — keep it
           }
@@ -2760,17 +2759,14 @@ if (name === 'settings')    loadSettingsData();
 
         if (error) {
           console.error('submitComment error:', error.message || error);
-          // Remove the optimistic comment
           listEl?.querySelector('[data-optimistic="1"]')?.remove();
-          // Revert the comment count
           const commentBtnRevert = document.querySelector('.comment-btn[data-id="' + postId + '"]');
           if (commentBtnRevert) {
             const cur = parseInt(commentBtnRevert.textContent.replace(/\D/g, '')) || 0;
             commentBtnRevert.innerHTML = cur > 1 ? '💬 ' + (cur - 1) : '💬 Kommenter';
           }
-          // Restore input text
           input.value = content;
-          alert(dashboardErrorMessage('submit-comment', error));
+          alert('Kommentar-feil: ' + (error?.message || error?.code || JSON.stringify(error)));
           return;
         }
 
