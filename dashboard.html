@@ -122,9 +122,8 @@
         display: flex;
         flex-direction: column;
         justify-content: center;
-        padding: 3.5rem 2.75rem 3rem 3rem;
+        padding: 3.5rem 3rem 3rem 2.75rem;
         width: 50%;
-        margin-left: auto;
       }
 
       .hero-eyebrow {
@@ -175,7 +174,7 @@
       /* Right panel — card positioned right side */
       .hero-right {
         position: absolute;
-        top: 0; left: 0; bottom: 0;
+        top: 0; right: 0; bottom: 0;
         width: 50%;
         z-index: 3;
       }
@@ -224,7 +223,7 @@
       .hero-photo-overlay {
         position: absolute; inset: 0;
         background:
-          linear-gradient(to left, rgba(4,3,12,0.97) 0%, rgba(4,3,12,0.82) 28%, rgba(4,3,12,0.35) 55%, rgba(4,3,12,0.2) 100%),
+          linear-gradient(to right, rgba(4,3,12,0.97) 0%, rgba(4,3,12,0.82) 28%, rgba(4,3,12,0.35) 55%, rgba(4,3,12,0.2) 100%),
           linear-gradient(to top, rgba(4,3,12,0.55) 0%, transparent 50%);
         z-index: 2;
       }
@@ -232,8 +231,8 @@
       /* Card — right-aligned inside photo panel */
       .hero-card-wrap {
         position: absolute; inset: 0;
-        display: flex; align-items: center; justify-content: flex-start;
-        padding: 2.75rem 1rem 2.75rem 2.75rem;
+        display: flex; align-items: center; justify-content: flex-end;
+        padding: 2.75rem 2.75rem 2.75rem 1rem;
         z-index: 2;
       }
 
@@ -1584,7 +1583,7 @@
     <aside class="sidebar">
       <div class="sidebar-logo">
         <div class="dot"></div>
-        <span>UAN COMMUNITY</span>
+        <span>UNG OG AKTIVE NORGE</span>
       </div>
 
       <span class="nav-section">Hoved</span>
@@ -1629,7 +1628,7 @@
 
           <!-- Left: text panel -->
           <div class="hero-left">
-            <div class="hero-eyebrow">Ung og Aktive Norge</div>
+            <div class="hero-eyebrow">UAN COMMUNITY</div>
             <h1 class="hero-title">Velkommen til<br>Ung og Aktive Norge</h1>
             <p class="hero-subtitle">Her finner du informasjon, aktiviteter og fellesskapet som holder UAN levende.</p>
             <button class="hero-cta" id="heroCta">
