@@ -273,7 +273,22 @@ CREATE POLICY "messages_select" ON messages FOR SELECT TO authenticated
 CREATE POLICY "messages_insert" ON messages FOR INSERT TO authenticated
   WITH CHECK (author_id = auth.uid());
 
--- ── 8. MEMBER GOAL SETTINGS ───────────────────────────────────
+-- ── 8. POST MEDIA ────────────────────────────────────────────
+ALTER TABLE community_posts ADD COLUMN IF NOT EXISTS media_url TEXT;
+
+-- Storage bucket for post images/videos (public read)
+INSERT INTO storage.buckets (id, name, public)
+  VALUES ('post-media', 'post-media', true)
+  ON CONFLICT DO NOTHING;
+
+DROP POLICY IF EXISTS "post_media_select" ON storage.objects;
+DROP POLICY IF EXISTS "post_media_insert" ON storage.objects;
+DROP POLICY IF EXISTS "post_media_delete" ON storage.objects;
+CREATE POLICY "post_media_select" ON storage.objects FOR SELECT USING (bucket_id = 'post-media');
+CREATE POLICY "post_media_insert" ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id = 'post-media');
+CREATE POLICY "post_media_delete" ON storage.objects FOR DELETE TO authenticated USING (bucket_id = 'post-media');
+
+-- ── 9. MEMBER GOAL SETTINGS ───────────────────────────────────
 -- Single-row settings table (id = 1 always)
 CREATE TABLE IF NOT EXISTS member_goal_settings (
   id               INTEGER     PRIMARY KEY DEFAULT 1,

@@ -8,36 +8,6 @@ const SUPABASE_KEY = 'sb_publishable_ONwJ-AHc8RGSvphR-9GaEA_AMQONxAC';
 
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// ── LEVELS ──────────────────────────────────────────────────
-const LEVELS = [
-  { id: 1, name: 'Nykommer',              xp: 0    },
-  { id: 2, name: 'Vokter',               xp: 100  },
-  { id: 3, name: 'Kjemper',              xp: 300  },
-  { id: 4, name: 'Mester',               xp: 700  },
-  { id: 5, name: 'Eldervokter',          xp: 1500 },
-  { id: 6, name: 'Legende',              xp: 3000 },
-  { id: 7, name: 'Den Syvende Flamme',   xp: 6000 },
-];
-
-function getLevelFromXP(xp) {
-  for (let i = LEVELS.length - 1; i >= 0; i--) {
-    if (xp >= LEVELS[i].xp) return LEVELS[i];
-  }
-  return LEVELS[0];
-}
-
-function getNextLevel(xp) {
-  const cur = getLevelFromXP(xp);
-  return LEVELS.find(l => l.xp > cur.xp) || null;
-}
-
-function xpProgress(xp) {
-  const cur  = getLevelFromXP(xp);
-  const next = getNextLevel(xp);
-  if (!next) return 100;
-  return Math.round(((xp - cur.xp) / (next.xp - cur.xp)) * 100);
-}
-
 // ── AUTH ─────────────────────────────────────────────────────
 
 // Race any promise against a timeout; resolves to null on timeout/error
