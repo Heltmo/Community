@@ -1655,6 +1655,104 @@
         font-size: 0.9rem;
       }
       .settings-toast.hidden { display: none; }
+
+      /* ── Faste arrangementer ─────────────────────────────── */
+      .faste-section { margin-top: 2.5rem; }
+      .faste-section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+      .faste-section-title { font-size: 0.67rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.13em; color: rgba(255,255,255,0.28); }
+      .faste-section-hint { font-size: 0.75rem; color: rgba(255,255,255,0.25); }
+      .faste-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+      .faste-box {
+        position: relative;
+        height: 290px;
+        border-radius: 1.25rem;
+        overflow: hidden;
+        cursor: pointer;
+        background: #1a1a2e;
+        box-shadow: 0 0 0 1px rgba(255,255,255,0.06);
+        transition: transform 0.32s cubic-bezier(.22,.68,0,1.2), box-shadow 0.32s ease;
+      }
+      .faste-box:hover { transform: scale(1.025); box-shadow: 0 0 32px rgba(139,92,246,0.35), 0 0 0 1px rgba(139,92,246,0.25); }
+      .faste-box:hover .faste-bg { transform: scale(1.08); }
+      .faste-bg {
+        position: absolute; inset: 0;
+        background-size: cover; background-position: center;
+        transition: transform 0.42s cubic-bezier(.22,.68,0,1.2);
+      }
+      .faste-overlay {
+        position: absolute; inset: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.35) 55%, rgba(0,0,0,0.12) 100%);
+        transition: background 0.3s;
+      }
+      .faste-box:hover .faste-overlay { background: linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.22) 55%, rgba(0,0,0,0.05) 100%); }
+      .faste-content {
+        position: absolute; inset: 0;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        text-align: center; padding: 1.5rem;
+      }
+      .faste-title {
+        font-size: 2rem; font-weight: 800; letter-spacing: 0.04em; color: #fff;
+        text-shadow: 0 2px 18px rgba(0,0,0,0.6), 0 0 40px rgba(139,92,246,0.3);
+        line-height: 1.1; margin-bottom: 0.55rem;
+        transition: text-shadow 0.3s;
+      }
+      .faste-box:hover .faste-title { text-shadow: 0 2px 24px rgba(0,0,0,0.7), 0 0 60px rgba(139,92,246,0.55); }
+      .faste-hint { font-size: 0.78rem; color: rgba(255,255,255,0.55); letter-spacing: 0.02em; }
+
+      /* Activity modal */
+      .activity-modal-overlay {
+        position: fixed; inset: 0; z-index: 1000;
+        background: rgba(0,0,0,0.72); backdrop-filter: blur(6px);
+        display: flex; align-items: center; justify-content: center;
+        padding: 1.5rem;
+      }
+      .activity-modal-overlay.hidden { display: none; }
+      .activity-modal {
+        background: #16162a; border: 1px solid rgba(139,92,246,0.2);
+        border-radius: 1.5rem; width: 100%; max-width: 480px;
+        overflow: hidden; position: relative;
+        box-shadow: 0 24px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04);
+      }
+      .activity-modal-img {
+        width: 100%; height: 200px;
+        background-size: cover; background-position: center;
+        position: relative;
+      }
+      .activity-modal-img::after {
+        content: ''; position: absolute; inset: 0;
+        background: linear-gradient(to top, #16162a 0%, transparent 60%);
+      }
+      .activity-modal-body { padding: 1.5rem 1.75rem 1.75rem; }
+      .activity-modal-title { font-size: 1.55rem; font-weight: 800; color: #fff; margin-bottom: 0.4rem; }
+      .activity-modal-desc { font-size: 0.9rem; color: rgba(255,255,255,0.55); line-height: 1.6; margin-bottom: 1.25rem; }
+      .activity-modal-participants {
+        display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.6rem;
+      }
+      .activity-modal-participants-label { font-size: 0.8rem; color: rgba(255,255,255,0.4); }
+      .activity-modal-participants-count { font-size: 0.85rem; font-weight: 700; color: rgba(255,255,255,0.75); }
+      .activity-progress-bar {
+        width: 100%; height: 5px; background: rgba(255,255,255,0.08);
+        border-radius: 99px; overflow: hidden; margin-bottom: 1.5rem;
+      }
+      .activity-progress-fill { height: 100%; background: linear-gradient(90deg, #7c3aed, #a78bfa); border-radius: 99px; transition: width 0.5s ease; }
+      .activity-modal-footer { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+      .activity-modal-status { font-size: 0.78rem; color: rgba(255,255,255,0.3); }
+      .activity-modal-joined { font-size: 0.82rem; color: #a78bfa; font-weight: 600; }
+      .activity-modal-close {
+        position: absolute; top: 0.9rem; right: 0.9rem; z-index: 2;
+        width: 2rem; height: 2rem; border-radius: 50%;
+        background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1);
+        color: rgba(255,255,255,0.7); font-size: 0.85rem; cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        transition: background 0.2s;
+      }
+      .activity-modal-close:hover { background: rgba(255,255,255,0.1); }
+
+      @media (max-width: 768px) {
+        .faste-grid { grid-template-columns: 1fr; }
+        .faste-box { height: 220px; }
+        .faste-title { font-size: 1.6rem; }
+      }
     </style>
   </head>
   <body>
@@ -1943,6 +2041,65 @@
             </div>
           </div>
 
+          <!-- Faste arrangementer -->
+          <div class="faste-section">
+            <div class="faste-section-header">
+              <span class="faste-section-title">Faste arrangementer</span>
+              <span class="faste-section-hint">👉 Trykk på en aktivitet for å bli med</span>
+            </div>
+            <div class="faste-grid">
+
+              <div class="faste-box" data-activity="paintball">
+                <div class="faste-bg" style="background-image:url('img.png/ChatGPT Image Mar 16, 2026, 01_48_47 AM.png');"></div>
+                <div class="faste-overlay"></div>
+                <div class="faste-content">
+                  <div class="faste-title">PAINTBALL</div>
+                  <div class="faste-hint">Trykk for å bli med</div>
+                </div>
+              </div>
+
+              <div class="faste-box" data-activity="fotball">
+                <div class="faste-bg" style="background-image:url('img.png/ChatGPT Image Mar 16, 2026, 01_49_48 AM.png');"></div>
+                <div class="faste-overlay"></div>
+                <div class="faste-content">
+                  <div class="faste-title">FOTBALL</div>
+                  <div class="faste-hint">Trykk for å bli med</div>
+                </div>
+              </div>
+
+              <div class="faste-box" data-activity="riding">
+                <div class="faste-bg" style="background-image:url('img.png/ChatGPT Image Mar 16, 2026, 01_50_55 AM.png');"></div>
+                <div class="faste-overlay"></div>
+                <div class="faste-content">
+                  <div class="faste-title">RIDING</div>
+                  <div class="faste-hint">Trykk for å bli med</div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Activity modal -->
+        <div class="activity-modal-overlay hidden" id="activityModal">
+          <div class="activity-modal">
+            <button class="activity-modal-close" id="activityModalClose">✕</button>
+            <div class="activity-modal-img" id="activityModalImg"></div>
+            <div class="activity-modal-body">
+              <div class="activity-modal-title" id="activityModalTitle"></div>
+              <div class="activity-modal-desc" id="activityModalDesc"></div>
+              <div class="activity-modal-participants">
+                <span class="activity-modal-participants-label">Deltakere</span>
+                <span class="activity-modal-participants-count" id="activityModalCount"></span>
+              </div>
+              <div class="activity-progress-bar"><div class="activity-progress-fill" id="activityModalProgress"></div></div>
+              <div class="activity-modal-footer">
+                <span class="activity-modal-status" id="activityModalStatus">Startes når nok folk er med</span>
+                <button class="btn btn-primary" id="activityModalJoinBtn">Bli med</button>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Propose modal -->
@@ -3589,6 +3746,95 @@ if (name === 'settings')    loadSettingsData();
       document.getElementById('savePersonvernBtn').addEventListener('click', () => {
         showSettingsToast('toastPersonvern');
       });
+
+      // ── Faste arrangementer ───────────────────────────────
+      (function initFasteArrangementer() {
+        const ACTIVITIES = {
+          paintball: {
+            title: 'Paintball',
+            desc: 'Intense paintball-kamper for hele gjengen! Ta på deg verneutstyret og gjør deg klar for action i skogen. Perfekt for alle som liker litt fart og spenning.',
+            img: "img.png/ChatGPT Image Mar 16, 2026, 01_48_47 AM.png",
+            current: 4,
+            max: 10,
+          },
+          fotball: {
+            title: 'Fotball',
+            desc: 'Ukentlige fotballkamper på gresset. Alle nivåer er velkomne – fra nybegynner til erfaren. Bli med og skap gode øyeblikk på banen.',
+            img: "img.png/ChatGPT Image Mar 16, 2026, 01_49_48 AM.png",
+            current: 7,
+            max: 14,
+          },
+          riding: {
+            title: 'Riding',
+            desc: 'Ridning og hestekjøring i vakre omgivelser. Opplev naturen fra hesteryggen sammen med andre UAN-medlemmer. Erfaring ikke nødvendig.',
+            img: "img.png/ChatGPT Image Mar 16, 2026, 01_50_55 AM.png",
+            current: 3,
+            max: 8,
+          },
+        };
+
+        const joined = JSON.parse(localStorage.getItem('fasteJoined') || '{}');
+
+        const modal = document.getElementById('activityModal');
+        const modalImg = document.getElementById('activityModalImg');
+        const modalTitle = document.getElementById('activityModalTitle');
+        const modalDesc = document.getElementById('activityModalDesc');
+        const modalCount = document.getElementById('activityModalCount');
+        const modalProgress = document.getElementById('activityModalProgress');
+        const modalStatus = document.getElementById('activityModalStatus');
+        const joinBtn = document.getElementById('activityModalJoinBtn');
+        const closeBtn = document.getElementById('activityModalClose');
+
+        let currentKey = null;
+
+        function openActivity(key) {
+          currentKey = key;
+          const a = ACTIVITIES[key];
+          const isJoined = !!joined[key];
+          const count = a.current + (isJoined ? 1 : 0);
+
+          modalImg.style.backgroundImage = "url('" + a.img + "')";
+          modalTitle.textContent = a.title;
+          modalDesc.textContent = a.desc;
+          modalCount.textContent = count + ' / ' + a.max;
+          modalProgress.style.width = Math.min(100, Math.round(count / a.max * 100)) + '%';
+
+          if (isJoined) {
+            joinBtn.textContent = 'Du er med ✓';
+            joinBtn.classList.add('btn-ghost');
+            joinBtn.classList.remove('btn-primary');
+            modalStatus.innerHTML = '<span class="activity-modal-joined">Du er påmeldt</span>';
+          } else {
+            joinBtn.textContent = 'Bli med';
+            joinBtn.classList.add('btn-primary');
+            joinBtn.classList.remove('btn-ghost');
+            modalStatus.textContent = 'Startes når nok folk er med';
+          }
+
+          modal.classList.remove('hidden');
+          document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+          modal.classList.add('hidden');
+          document.body.style.overflow = '';
+          currentKey = null;
+        }
+
+        document.querySelectorAll('.faste-box').forEach(box => {
+          box.addEventListener('click', () => openActivity(box.dataset.activity));
+        });
+
+        closeBtn.addEventListener('click', closeModal);
+        modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+
+        joinBtn.addEventListener('click', () => {
+          if (!currentKey || joined[currentKey]) return;
+          joined[currentKey] = true;
+          localStorage.setItem('fasteJoined', JSON.stringify(joined));
+          openActivity(currentKey); // re-render modal state
+        });
+      })();
     </script>
   </body>
 </html>
