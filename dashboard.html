@@ -1887,16 +1887,10 @@
               <div id="nesteArrangement"><div class="loading">Laster…</div></div>
             </div>
 
-            <!-- Nå i fellesskapet — live rotator -->
-            <div class="dash-card now-card">
-              <div class="dash-card-label">Nå i fellesskapet</div>
-              <div class="now-content" id="nowContent">
-                <div class="loading">Laster…</div>
-              </div>
-              <div class="now-footer">
-                <div class="now-dots" id="nowDots"></div>
-                <span style="font-size:0.68rem;color:rgba(255,255,255,0.18);">Oppdateres automatisk</span>
-              </div>
+            <!-- Medlemsmål -->
+            <div class="dash-card">
+              <div class="dash-card-label">Medlemsmål</div>
+              <div id="dashMemberGoal"><div class="loading">Laster…</div></div>
             </div>
 
             <!-- Min status -->
@@ -2499,6 +2493,7 @@ if (name === 'settings')    loadSettingsData();
         renderMinStatus();
         loadViktigNaa();
         loadNesteArrangement();
+        loadDashMemberGoal();
         loadCommunityPreview();
         loadNowInFellesskap();
         loadMyActivities();
@@ -2559,6 +2554,32 @@ if (name === 'settings')    loadSettingsData();
 
         el.querySelector('.btn-sm-outline').addEventListener('click', function () {
           registerInterest(parseInt(this.dataset.id, 10));
+        });
+      }
+
+      // ── DASHBOARD MEDLEMSMÅL ──────────────────────────────
+      async function loadDashMemberGoal() {
+        const el = document.getElementById('dashMemberGoal');
+        if (!el) return;
+        const { data } = await db.from('member_goal_settings').select('*').eq('id', 1).single();
+        if (!data) { el.innerHTML = ''; return; }
+        const pct       = Math.min(Math.round((data.current_count / Math.max(data.target_count, 1)) * 100), 100);
+        const remaining = Math.max(data.target_count - data.current_count, 0);
+        el.innerHTML =
+          '<div style="text-align:center;padding:0.5rem 0 0.75rem;">'
+          + '<div style="font-size:3rem;font-weight:900;color:#a78bfa;line-height:1;letter-spacing:-0.03em;">' + data.current_count + '</div>'
+          + '<div style="font-size:0.78rem;color:rgba(255,255,255,0.35);margin-top:0.3rem;letter-spacing:0.04em;">registrerte medlemmer</div>'
+          + '</div>'
+          + '<div style="height:5px;background:rgba(255,255,255,0.07);border-radius:99px;overflow:hidden;margin-bottom:0.6rem;">'
+          + '<div id="dashMgFill" style="height:100%;width:0%;background:linear-gradient(90deg,#7c5cfc,#a78bfa);border-radius:99px;transition:width 0.9s cubic-bezier(.22,1,.36,1);"></div>'
+          + '</div>'
+          + '<div style="display:flex;justify-content:space-between;align-items:center;">'
+          + '<span style="font-size:0.74rem;color:rgba(255,255,255,0.28);font-style:italic;">' + escHtml(data.description || '') + '</span>'
+          + '<span style="font-size:0.74rem;color:rgba(255,255,255,0.3);white-space:nowrap;margin-left:0.5rem;">' + remaining + ' igjen</span>'
+          + '</div>';
+        requestAnimationFrame(() => {
+          const fill = document.getElementById('dashMgFill');
+          if (fill) fill.style.width = pct + '%';
         });
       }
 
