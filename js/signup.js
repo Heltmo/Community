@@ -126,7 +126,6 @@ document.getElementById('regForm').addEventListener('submit', async function (e)
 
   fieldError('fullName',    'err-fullName',    !name);
   fieldError('phoneNumber', 'err-phoneNumber', !phone);
-  fieldError('birthdate',   'err-birthdate',   !birthdate);
   fieldError('kommune',     'err-kommune',     !municipality);
   checkboxError(!bekreft);
 
@@ -138,7 +137,24 @@ document.getElementById('regForm').addEventListener('submit', async function (e)
       : 'E-postadresse er påkrevd.';
   }
 
-  if (!name || !phone || !birthdate || !municipality || !bekreft || emailMissing) return;
+  let birthdateError = '';
+  if (!birthdate) {
+    birthdateError = 'Fødselsdato er påkrevd.';
+  } else {
+    const today = new Date();
+    const dob   = new Date(birthdate);
+    if (dob >= today) {
+      birthdateError = 'Fødselsdato kan ikke være i fremtiden.';
+    } else {
+      const age = today.getFullYear() - dob.getFullYear()
+        - (today < new Date(today.getFullYear(), dob.getMonth(), dob.getDate()) ? 1 : 0);
+      if (age < 17) birthdateError = 'Du må være minst 17 år for å registrere deg.';
+    }
+  }
+  document.getElementById('err-birthdate').textContent = birthdateError;
+  fieldError('birthdate', 'err-birthdate', !!birthdateError);
+
+  if (!name || !phone || birthdateError || !municipality || !bekreft || emailMissing) return;
 
   const btn = this.querySelector('button[type="submit"]');
   btn.disabled    = true;
