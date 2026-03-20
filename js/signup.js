@@ -261,6 +261,20 @@ document.getElementById('otpVerifyBtn').addEventListener('click', async () => {
     const existing = await getMember(session.user.id);
     console.log('[signup] existing member row:', existing);
 
+    if (existing) {
+      // Account already exists — block re-registration
+      localStorage.removeItem('uan_pending_reg');
+      await db.auth.signOut();
+      btn.disabled    = false;
+      btn.textContent = 'Bekreft og fortsett';
+      document.getElementById('otpCode').value = '';
+      showPanel('panelLogin');
+      document.getElementById('tabLogin').classList.add('active');
+      document.getElementById('tabRegister').classList.remove('active');
+      alert('Du har allerede en konto med dette telefonnummeret. Vennligst logg inn.');
+      return;
+    }
+
     if (!existing) {
       const insertResponse = await db.from('members').insert(payload);
       console.log('[signup] insert response:', JSON.stringify(insertResponse));
