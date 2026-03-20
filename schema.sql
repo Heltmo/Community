@@ -3,12 +3,36 @@
 -- Run this entire file in Supabase → SQL Editor → Run
 -- ═══════════════════════════════════════════════════════════════
 
+-- ── 0. CREATE members TABLE ──────────────────────────────────────
+CREATE TABLE IF NOT EXISTS members (
+  id                SERIAL      PRIMARY KEY,
+  user_id           UUID        NOT NULL UNIQUE REFERENCES auth.users(id) ON DELETE CASCADE,
+  name              TEXT        NOT NULL,
+  phone             TEXT        NOT NULL UNIQUE,
+  email             TEXT        NOT NULL UNIQUE,
+  municipality      TEXT,
+  wants_membership  BOOLEAN     NOT NULL DEFAULT false,
+  birth_date        DATE,
+  join_date         DATE,
+  verified          BOOLEAN     NOT NULL DEFAULT false,
+  role              TEXT        NOT NULL DEFAULT 'member',
+  xp                INTEGER     NOT NULL DEFAULT 0,
+  level_id          INTEGER     NOT NULL DEFAULT 1,
+  is_active         BOOLEAN     NOT NULL DEFAULT true,
+  bio               TEXT,
+  avatar_url        TEXT,
+  created_at        TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at        TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
 -- ── 1. EXTEND members TABLE ──────────────────────────────────────
-ALTER TABLE members ADD COLUMN IF NOT EXISTS user_id   UUID    REFERENCES auth.users(id);
-ALTER TABLE members ADD COLUMN IF NOT EXISTS role      TEXT    NOT NULL DEFAULT 'member';
-ALTER TABLE members ADD COLUMN IF NOT EXISTS xp        INTEGER NOT NULL DEFAULT 0;
-ALTER TABLE members ADD COLUMN IF NOT EXISTS level_id  INTEGER NOT NULL DEFAULT 1;
-ALTER TABLE members ADD COLUMN IF NOT EXISTS verified  BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE members ADD COLUMN IF NOT EXISTS user_id          UUID    NOT NULL UNIQUE REFERENCES auth.users(id) ON DELETE CASCADE;
+ALTER TABLE members ADD COLUMN IF NOT EXISTS role             TEXT    NOT NULL DEFAULT 'member';
+ALTER TABLE members ADD COLUMN IF NOT EXISTS xp               INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE members ADD COLUMN IF NOT EXISTS level_id         INTEGER NOT NULL DEFAULT 1;
+ALTER TABLE members ADD COLUMN IF NOT EXISTS verified         BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE members ADD COLUMN IF NOT EXISTS birth_date       DATE;
+ALTER TABLE members ADD COLUMN IF NOT EXISTS wants_membership BOOLEAN NOT NULL DEFAULT false;
 
 -- ── 2. LEVELS ────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS levels (
@@ -49,9 +73,6 @@ ALTER TABLE members ADD COLUMN IF NOT EXISTS avatar_url   TEXT;
 -- ── COMMUNITY POSTS extras
 ALTER TABLE community_posts ADD COLUMN IF NOT EXISTS is_hidden BOOLEAN NOT NULL DEFAULT false;
 ALTER TABLE community_posts ADD COLUMN IF NOT EXISTS is_pinned BOOLEAN NOT NULL DEFAULT false;
-
--- ── EVENT PROPOSALS extras
-ALTER TABLE event_proposals ADD COLUMN IF NOT EXISTS admin_note TEXT;
 
 -- ── 4. TOURNAMENTS ───────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS tournaments (
@@ -107,6 +128,7 @@ CREATE TABLE IF NOT EXISTS announcements (
 ALTER TABLE members ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "members_select" ON members;
 DROP POLICY IF EXISTS "members_insert" ON members;
+DROP POLICY IF EXISTS "members_insert_own" ON members;
 DROP POLICY IF EXISTS "members_update" ON members;
 CREATE POLICY "members_select" ON members FOR SELECT TO authenticated USING (true);
 CREATE POLICY "members_insert" ON members FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
@@ -145,6 +167,8 @@ CREATE POLICY "likes_delete" ON community_post_likes FOR DELETE TO authenticated
 -- tournaments (public read, admin write handled in app)
 ALTER TABLE tournaments ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "tournaments_select" ON tournaments;
+DROP POLICY IF EXISTS "tournaments_insert" ON tournaments;
+DROP POLICY IF EXISTS "tournaments_update" ON tournaments;
 CREATE POLICY "tournaments_select" ON tournaments FOR SELECT USING (true);
 CREATE POLICY "tournaments_insert" ON tournaments FOR INSERT TO authenticated WITH CHECK (true);
 CREATE POLICY "tournaments_update" ON tournaments FOR UPDATE TO authenticated USING (true);
@@ -161,12 +185,14 @@ CREATE POLICY "tp_delete"  ON tournament_participants FOR DELETE TO authenticate
 -- tournament_results
 ALTER TABLE tournament_results ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "tr_select" ON tournament_results;
+DROP POLICY IF EXISTS "tr_insert" ON tournament_results;
 CREATE POLICY "tr_select" ON tournament_results FOR SELECT USING (true);
 CREATE POLICY "tr_insert" ON tournament_results FOR INSERT TO authenticated WITH CHECK (true);
 
 -- announcements
 ALTER TABLE announcements ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "ann_select" ON announcements;
+DROP POLICY IF EXISTS "ann_insert" ON announcements;
 CREATE POLICY "ann_select" ON announcements FOR SELECT USING (true);
 CREATE POLICY "ann_insert" ON announcements FOR INSERT TO authenticated WITH CHECK (true);
 
@@ -179,6 +205,7 @@ CREATE TABLE IF NOT EXISTS event_proposals (
   location    TEXT,
   event_date  DATE,
   status      TEXT        NOT NULL DEFAULT 'pending', -- 'pending' | 'under_review' | 'approved' | 'rejected'
+  admin_note  TEXT,
   created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
@@ -190,13 +217,13 @@ DROP POLICY IF EXISTS "ep_admin_update" ON event_proposals;
 -- Members can read their own proposals; admins can read all
 CREATE POLICY "ep_select" ON event_proposals FOR SELECT TO authenticated
   USING (
-    member_id = (SELECT id FROM members WHERE user_id = auth.uid())
+    member_id = auth.uid()
     OR EXISTS (SELECT 1 FROM members WHERE user_id = auth.uid() AND role = 'admin')
   );
--- Members can only insert rows tied to their own members.id
+-- Members can only insert rows tied to their own auth.uid()
 CREATE POLICY "ep_insert" ON event_proposals FOR INSERT TO authenticated
   WITH CHECK (
-    member_id = (SELECT id FROM members WHERE user_id = auth.uid())
+    member_id = auth.uid()
   );
 -- Admins can update status
 CREATE POLICY "ep_admin_update" ON event_proposals FOR UPDATE TO authenticated

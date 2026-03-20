@@ -238,7 +238,7 @@
           const { data: existing } = await db.from('members').select('id').eq('user_id', userId).single();
 
           if (!existing) {
-            await db.from('members').insert({
+            const { error: insertError } = await db.from('members').insert({
               ...reg,
               user_id:  userId,
               verified: true,
@@ -246,6 +246,14 @@
               xp:       0,
               level_id: 1,
             });
+
+            if (insertError) {
+              console.error('Member insert failed:', insertError);
+              errEl.textContent = 'Registrering feilet: ' + (insertError.message || 'ukjent feil');
+              errEl.classList.add('visible');
+              btn.disabled = false; btn.textContent = 'Bekreft';
+              return;
+            }
 
             // Post welcome message to community
             await postSystemMessage(`🎉 Et nytt medlem har ankommet fellesskapet — velkommen, ${reg.name}!`);
