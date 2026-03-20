@@ -3,6 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#7c5cfc" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="UAN" />
+    <link rel="apple-touch-icon" href="img.png" />
     <title>UAN — Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
     <style>
@@ -1942,7 +1949,7 @@
           <!-- Left: text panel -->
           <div class="hero-left">
             <div class="hero-eyebrow">UAN COMMUNITY</div>
-            <h1 class="hero-title">Velkommen til<br>Ung og Aktive Norge</h1>
+            <h1 class="hero-title">Ung og Aktive Norge</h1>
             <p class="hero-subtitle">Her finner du informasjon, aktiviteter og fellesskapet som holder UAN levende.</p>
             <div style="display:flex;align-items:center;gap:0.85rem;flex-wrap:wrap;">
               <button class="hero-cta" id="heroCta">
@@ -2612,8 +2619,8 @@ if (name === 'settings')    loadSettingsData();
 
         if (!data?.length) {
           el.innerHTML =
-            '<div class="viktig-hero-title">Påmelding til vårens aktivitetshelg er åpen!</div>'
-            + '<div class="viktig-hero-desc">Meld deg på og sikre plassen din til årets første samling. Begrenset antall plasser tilgjengelig.</div>'
+            '<div class="viktig-hero-title">Klar for aktiviteter og nye bekjentskap?</div>'
+            + '<div class="viktig-hero-desc">Bli med i UngAktive. Vi kjører events, konkurranser og gode vibes hele sommeren. Møt opp, bli kjent med folk og vær med på det som skjer – enkelt.</div>'
             + '<button class="viktig-hero-btn">Les mer →</button>';
           return;
         }

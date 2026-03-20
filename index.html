@@ -3,6 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#7c5cfc" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="UAN" />
+    <link rel="apple-touch-icon" href="img.png" />
     <title>UAN — Bli medlem</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
     <style>
@@ -337,7 +344,12 @@
 
       /* ── RESPONSIVE ────────────────────────────────────── */
       @media (max-width: 600px) {
-        body { padding: 1.5rem 0.75rem 2.5rem; align-items: flex-start; }
+        body { padding: 6rem 0.75rem 2.5rem; align-items: flex-start; }
+        .bg-overlay {
+          background:
+            radial-gradient(ellipse 80% 70% at 50% 30%, rgba(8,8,18,0.45) 0%, rgba(8,8,18,0.30) 50%, rgba(8,8,18,0.20) 100%),
+            linear-gradient(180deg, rgba(8,8,18,0.25) 0%, rgba(8,8,18,0.55) 60%);
+        }
         .card {
           width: 100%;
           padding: 1.5rem 1.25rem;
@@ -358,10 +370,10 @@
 
     <!-- ── BACKGROUND VIDEO MONTAGE ──────────────────────── -->
     <div class="bg-video-wrap" id="bgWrap">
-      <video class="active" src="Video.png/video-1.mp4" muted playsinline preload="auto"></video>
-      <video             src="Video.png/video-2.mp4" muted playsinline preload="auto"></video>
-      <video             src="Video.png/video-3.mp4" muted playsinline preload="auto"></video>
-      <video             src="Video.png/video-4.mp4" muted playsinline preload="auto"></video>
+      <video class="active" src="Video.png/video-1.mp4" autoplay muted playsinline preload="auto"></video>
+      <video             src="Video.png/video-2.mp4" autoplay muted playsinline preload="auto"></video>
+      <video             src="Video.png/video-3.mp4" autoplay muted playsinline preload="auto"></video>
+      <video             src="Video.png/video-4.mp4" autoplay muted playsinline preload="auto"></video>
     </div>
     <div class="bg-overlay"></div>
 

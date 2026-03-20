@@ -3,6 +3,13 @@
 // Include AFTER the Supabase CDN script
 // ═══════════════════════════════════════════════════════════
 
+// ── SERVICE WORKER (PWA) ──────────────────────────────────────
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
+
 const SUPABASE_URL = 'https://ytwicopssgskffjmolmu.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_ONwJ-AHc8RGSvphR-9GaEA_AMQONxAC';
 

@@ -2,13 +2,6 @@
 // signup.js — Registration + Login logic for index.html
 // ═══════════════════════════════════════════════════════════
 
-// Unregister any leftover service workers
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.getRegistrations().then(regs => {
-    regs.forEach(r => r.unregister());
-  });
-}
-
 /* ── POPULATE DATE DROPDOWNS ───────────────────────── */
 (function () {
   const dayEl  = document.getElementById('birthDay');

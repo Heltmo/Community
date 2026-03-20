@@ -1,0 +1,24 @@
+{
+  "name": "UAN Community",
+  "short_name": "UAN",
+  "description": "Ung og Aktive Norge — Fellesskapet ditt",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#080810",
+  "theme_color": "#7c5cfc",
+  "icons": [
+    {
+      "src": "img.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "img.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
