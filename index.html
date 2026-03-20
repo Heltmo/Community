@@ -207,15 +207,28 @@
 
       input::placeholder { color: rgba(255,255,255,0.18); }
 
-      input[type="date"]::-webkit-calendar-picker-indicator {
-        filter: invert(1);
-        opacity: 0.5;
+      select {
+        width: 100%;
+        padding: 0.82rem 1.1rem;
+        font-size: 0.95rem;
+        font-family: inherit;
+        background: rgba(255,255,255,0.045);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 0.75rem;
+        color: #fff;
+        outline: none;
+        appearance: none;
         cursor: pointer;
+        transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
       }
-
-      input[type="date"]::-webkit-calendar-picker-indicator:hover {
-        opacity: 0.9;
+      select option { background: #1a1a2e; color: #fff; }
+      select:focus {
+        border-color: rgba(167,139,250,0.55);
+        background: rgba(167,139,250,0.05);
+        box-shadow: 0 0 0 3px rgba(167,139,250,0.1);
       }
+      select.error { border-color: rgba(248,113,113,0.7); background: rgba(248,113,113,0.05); box-shadow: 0 0 0 3px rgba(248,113,113,0.1); }
+      .date-row { display: grid; grid-template-columns: 1fr 2fr 1.4fr; gap: 0.5rem; }
 
       input:focus {
         border-color: rgba(167,139,250,0.55);
@@ -389,8 +402,30 @@
 
           <!-- Fødselsdato -->
           <div class="field">
-            <label for="birthdate">Fødselsdato</label>
-            <input type="date" id="birthdate" name="birthdate" />
+            <label>Fødselsdato</label>
+            <div class="date-row">
+              <select id="birthDay">
+                <option value="">Dag</option>
+              </select>
+              <select id="birthMonth">
+                <option value="">Måned</option>
+                <option value="01">Januar</option>
+                <option value="02">Februar</option>
+                <option value="03">Mars</option>
+                <option value="04">April</option>
+                <option value="05">Mai</option>
+                <option value="06">Juni</option>
+                <option value="07">Juli</option>
+                <option value="08">August</option>
+                <option value="09">September</option>
+                <option value="10">Oktober</option>
+                <option value="11">November</option>
+                <option value="12">Desember</option>
+              </select>
+              <select id="birthYear">
+                <option value="">År</option>
+              </select>
+            </div>
             <span class="error-msg" id="err-birthdate">Fødselsdato er påkrevd.</span>
           </div>
 

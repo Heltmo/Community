@@ -9,6 +9,25 @@ if ('serviceWorker' in navigator) {
   });
 }
 
+/* ── POPULATE DATE DROPDOWNS ───────────────────────── */
+(function () {
+  const dayEl  = document.getElementById('birthDay');
+  const yearEl = document.getElementById('birthYear');
+  for (let d = 1; d <= 31; d++) {
+    const o = document.createElement('option');
+    o.value = String(d).padStart(2, '0');
+    o.textContent = d;
+    dayEl.appendChild(o);
+  }
+  const maxYear = new Date().getFullYear() - 17;
+  for (let y = maxYear; y >= 1920; y--) {
+    const o = document.createElement('option');
+    o.value = y;
+    o.textContent = y;
+    yearEl.appendChild(o);
+  }
+})();
+
 /* ── TAB SWITCHING ─────────────────────────────────── */
 document.getElementById('tabRegister').addEventListener('click', function () {
   document.getElementById('tabRegister').classList.add('active');
@@ -96,10 +115,18 @@ function authErrorMessage(action, error) {
 }
 
 /* ── CLEAR ERRORS ON INPUT ─────────────────────────── */
-['fullName','phoneNumber','email','birthdate','kommune'].forEach(id => {
+['fullName','phoneNumber','email','kommune'].forEach(id => {
   document.getElementById(id).addEventListener('input', () => {
     document.getElementById(id).classList.remove('error');
     document.getElementById('err-' + id).classList.remove('visible');
+  });
+});
+['birthDay','birthMonth','birthYear'].forEach(id => {
+  document.getElementById(id).addEventListener('change', () => {
+    document.getElementById('birthDay').classList.remove('error');
+    document.getElementById('birthMonth').classList.remove('error');
+    document.getElementById('birthYear').classList.remove('error');
+    document.getElementById('err-birthdate').classList.remove('visible');
   });
 });
 
@@ -120,9 +147,12 @@ document.getElementById('regForm').addEventListener('submit', async function (e)
   const name         = document.getElementById('fullName').value.trim();
   const phone        = document.getElementById('phoneNumber').value.trim();
   const emailVal     = document.getElementById('email').value.trim();
-  const birthdate    = document.getElementById('birthdate').value;
   const municipality = document.getElementById('kommune').value.trim();
   const bekreft      = document.getElementById('bekreft').checked;
+
+  const bDay   = document.getElementById('birthDay').value;
+  const bMonth = document.getElementById('birthMonth').value;
+  const bYear  = document.getElementById('birthYear').value;
 
   fieldError('fullName',    'err-fullName',    !name);
   fieldError('phoneNumber', 'err-phoneNumber', !phone);
@@ -138,10 +168,12 @@ document.getElementById('regForm').addEventListener('submit', async function (e)
   }
 
   let birthdateError = '';
-  if (!birthdate) {
+  let birthdate = '';
+  if (!bDay || !bMonth || !bYear) {
     birthdateError = 'Fødselsdato er påkrevd.';
   } else {
-    const today = new Date();
+    birthdate = bYear + '-' + bMonth + '-' + bDay;
+    const today = new Date(); today.setHours(0,0,0,0);
     const dob   = new Date(birthdate);
     if (dob >= today) {
       birthdateError = 'Fødselsdato kan ikke være i fremtiden.';
@@ -151,8 +183,12 @@ document.getElementById('regForm').addEventListener('submit', async function (e)
       if (age < 17) birthdateError = 'Du må være minst 17 år for å registrere deg.';
     }
   }
+  const dateInvalid = !!birthdateError;
   document.getElementById('err-birthdate').textContent = birthdateError;
-  fieldError('birthdate', 'err-birthdate', !!birthdateError);
+  document.getElementById('err-birthdate').classList.toggle('visible', dateInvalid);
+  document.getElementById('birthDay').classList.toggle('error', dateInvalid);
+  document.getElementById('birthMonth').classList.toggle('error', dateInvalid);
+  document.getElementById('birthYear').classList.toggle('error', dateInvalid);
 
   if (!name || !phone || birthdateError || !municipality || !bekreft || emailMissing) return;
 
