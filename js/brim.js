@@ -27,7 +27,7 @@ async function getSession() {
   }
 }
 
-async function requireAuth(redirect = 'login.html') {
+async function requireAuth(redirect = 'index.html') {
   const s = await getSession();
   if (!s) { window.location.href = redirect; return null; }
   return s;
