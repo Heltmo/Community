@@ -21,7 +21,8 @@
         padding: 16vh 1rem 2rem;
         background: #0d0e1a;
         position: relative;
-        overflow: hidden;
+        overflow-x: hidden;
+        overflow-y: auto;
       }
 
       /* ── VIDEO BACKGROUND ─────────────────────────────── */
@@ -336,15 +337,20 @@
 
       /* ── RESPONSIVE ────────────────────────────────────── */
       @media (max-width: 600px) {
+        body { padding: 1.5rem 0.75rem 2.5rem; align-items: flex-start; }
         .card {
           width: 100%;
-          padding: 1.75rem 1.5rem;
-          border-radius: 1.25rem;
+          padding: 1.5rem 1.25rem;
+          border-radius: 1.1rem;
         }
-        h1 { font-size: 1.45rem; }
-        input { padding: 0.6rem 0.85rem; font-size: 0.875rem; }
+        h1 { font-size: 1.35rem; }
+        input, select { padding: 0.65rem 0.9rem; font-size: 0.875rem; }
         .submit-btn { padding: 0.7rem; font-size: 0.875rem; }
-        .field { margin-bottom: 0.75rem; }
+        .field { margin-bottom: 0.7rem; }
+        .date-row { grid-template-columns: 1fr 1fr; gap: 0.4rem; }
+        .date-row select:last-child { grid-column: 1 / -1; }
+        .tab-bar { gap: 0; }
+        .tab { font-size: 0.82rem; padding: 0.6rem 0.9rem; }
       }
     </style>
   </head>
