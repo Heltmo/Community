@@ -238,8 +238,6 @@ document.getElementById('otpVerifyBtn').addEventListener('click', async () => {
       join_date:        _pendingReg.join_date,
       verified:         true,
       role:             'member',
-      xp:               0,
-      level_id:         1,
     };
 
     console.log('[signup] insert payload:', JSON.stringify(payload));
