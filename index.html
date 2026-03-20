@@ -500,11 +500,30 @@
             <span class="error-msg" id="err-loginPassword">Passord er påkrevd.</span>
           </div>
           <button type="submit" class="submit-btn">Logg inn</button>
+          <p style="text-align:center;margin-top:0.75rem;">
+            <a href="#" id="forgotPasswordLink" style="font-size:0.8rem;color:rgba(167,139,250,0.7);text-decoration:none;">Glemt passord?</a>
+          </p>
         </form>
 
         <p class="footer-note" style="margin-top:1.25rem;">
           Ikke medlem ennå?
           <a href="#" id="switchToRegister" style="color:rgba(167,139,250,0.8);text-decoration:none;">Bli medlem</a>
+        </p>
+      </div>
+
+      <!-- ── FORGOT PASSWORD PANEL ───────────────────────── -->
+      <div class="panel" id="panelForgot">
+        <h1>Glemt passord?</h1>
+        <p class="subtitle">Skriv inn telefonnummeret ditt så sender vi en kode du kan bruke til å sette nytt passord.</p>
+        <div class="divider"></div>
+        <div class="field">
+          <label for="forgotPhone">Telefonnummer</label>
+          <input type="tel" id="forgotPhone" placeholder="+47 000 00 000" autocomplete="tel" value="+47" />
+          <span class="error-msg" id="err-forgotPhone">Telefonnummer er påkrevd.</span>
+        </div>
+        <button class="submit-btn" id="forgotSendBtn">Send kode</button>
+        <p class="footer-note" style="margin-top:1.25rem;">
+          <a href="#" id="backToLogin" style="color:rgba(167,139,250,0.8);text-decoration:none;">← Tilbake til innlogging</a>
         </p>
       </div>
 

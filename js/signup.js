@@ -72,6 +72,7 @@ function checkboxError(show) {
 
 let _pendingReg   = null;
 let _pendingPhone = '';
+let _forgotFlow   = false;
 
 // Convert dd/mm/yyyy → yyyy-mm-dd; HTML date inputs already return yyyy-mm-dd
 function toIsoDate(val) {
@@ -82,7 +83,7 @@ function toIsoDate(val) {
 }
 
 function showPanel(id) {
-  ['panelRegister','panelOtp','panelLogin'].forEach(p => {
+  ['panelRegister','panelOtp','panelLogin','panelForgot'].forEach(p => {
     document.getElementById(p).classList.toggle('active', p === id);
   });
 }
@@ -308,6 +309,13 @@ document.getElementById('otpVerifyBtn').addEventListener('click', async () => {
     return;
   }
 
+  // Forgot password flow — skip member insert, just go set new password
+  if (_forgotFlow) {
+    _forgotFlow = false;
+    window.location.href = 'create-password.html';
+    return;
+  }
+
   if (_pendingReg) {
     const payload = {
       user_id:          session.user.id,
@@ -409,4 +417,63 @@ document.getElementById('loginForm').addEventListener('submit', async function (
   }
 
   window.location.href = 'dashboard.html';
+});
+
+/* ── FORGOT PASSWORD ────────────────────────────────── */
+document.getElementById('forgotPasswordLink').addEventListener('click', function (e) {
+  e.preventDefault();
+  _forgotFlow = true;
+  showPanel('panelForgot');
+});
+
+document.getElementById('backToLogin').addEventListener('click', function (e) {
+  e.preventDefault();
+  _forgotFlow = false;
+  showPanel('panelLogin');
+});
+
+// Phone prefix guard for forgot phone
+(function () {
+  const el = document.getElementById('forgotPhone');
+  el.addEventListener('input', () => {
+    if (!el.value.startsWith('+47')) {
+      el.value = '+47' + el.value.replace(/^\+47?/, '');
+    }
+  });
+  el.addEventListener('keydown', e => {
+    if ((e.key === 'Backspace' || e.key === 'Delete') && el.value === '+47') {
+      e.preventDefault();
+    }
+  });
+})();
+
+document.getElementById('forgotSendBtn').addEventListener('click', async function () {
+  const phone = document.getElementById('forgotPhone').value.trim();
+  if (!phone || phone === '+47') {
+    document.getElementById('forgotPhone').classList.add('error');
+    document.getElementById('err-forgotPhone').classList.add('visible');
+    return;
+  }
+
+  this.disabled    = true;
+  this.textContent = 'Sender kode…';
+
+  const formattedPhone = formatPhone(phone);
+  const { error } = await db.auth.signInWithOtp({ phone: formattedPhone });
+
+  if (error) {
+    alert(authErrorMessage('send-otp', error));
+    this.disabled    = false;
+    this.textContent = 'Send kode';
+    return;
+  }
+
+  _pendingPhone = formattedPhone;
+  _forgotFlow   = true;
+  this.disabled    = false;
+  this.textContent = 'Send kode';
+
+  document.getElementById('otpPhoneDisplay').textContent = formattedPhone;
+  showPanel('panelOtp');
+  setTimeout(() => document.getElementById('otpCode').focus(), 100);
 });
