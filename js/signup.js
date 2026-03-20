@@ -114,6 +114,22 @@ function authErrorMessage(action, error) {
   return fallback[action] || 'Noe gikk galt. Prøv igjen.';
 }
 
+/* ── PHONE PREFIX GUARD ─────────────────────────────── */
+['phoneNumber', 'loginPhone'].forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener('input', () => {
+    if (!el.value.startsWith('+47')) {
+      el.value = '+47' + el.value.replace(/^\+47?/, '');
+    }
+  });
+  el.addEventListener('keydown', e => {
+    const PREFIX = '+47';
+    if ((e.key === 'Backspace' || e.key === 'Delete') && el.value === PREFIX) {
+      e.preventDefault();
+    }
+  });
+});
+
 /* ── CLEAR ERRORS ON INPUT ─────────────────────────── */
 ['fullName','phoneNumber','email','kommune'].forEach(id => {
   document.getElementById(id).addEventListener('input', () => {
