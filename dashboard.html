@@ -2699,7 +2699,8 @@ if (name === 'settings')    loadSettingsData();
         const sys      = p.type === 'system' || p.type === 'welcome';
         const initials = (p.author_name || 'UA').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
         const myInit   = currentMember?.name?.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() || '?';
-        const canDelete = p.author_id && currentSession && p.author_id === currentSession.user.id;
+        const isAdmin   = currentMember?.role === 'admin';
+        const canDelete = currentSession && (isAdmin || (p.author_id && p.author_id === currentSession.user.id));
         const liked = !!p.liked;
         const likeCount = p.likeCount || 0;
 
@@ -2899,7 +2900,7 @@ if (name === 'settings')    loadSettingsData();
         }
         listEl.innerHTML = data.map(c => {
           const init = (c.author_name || 'UA').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
-          const canDelete = c.author_id && currentSession && c.author_id === currentSession.user.id;
+          const canDelete = currentSession && (currentMember?.role === 'admin' || (c.author_id && c.author_id === currentSession.user.id));
           return '<div class="comment-item" id="comment-' + c.id + '">'
             + '<div class="comment-avatar">' + init + '</div>'
             + '<div class="comment-bubble">'
