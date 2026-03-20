@@ -2620,8 +2620,7 @@ if (name === 'settings')    loadSettingsData();
         if (!data?.length) {
           el.innerHTML =
             '<div class="viktig-hero-title">Klar for aktiviteter og nye bekjentskap?</div>'
-            + '<div class="viktig-hero-desc">Bli med i UngAktive. Vi kjører events, konkurranser og gode vibes hele sommeren. Møt opp, bli kjent med folk og vær med på det som skjer – enkelt.</div>'
-            + '<button class="viktig-hero-btn">Les mer →</button>';
+            + '<div class="viktig-hero-desc">Bli med i UngAktive. Vi kjører events, konkurranser og gode vibes hele sommeren. Møt opp, bli kjent med folk og vær med på det som skjer – enkelt.</div>';
           return;
         }
 
@@ -2631,8 +2630,7 @@ if (name === 'settings')    loadSettingsData();
 
         el.innerHTML =
           '<div class="viktig-hero-title">' + escHtml(a.title) + '</div>'
-          + (excerpt ? '<div class="viktig-hero-desc">' + escHtml(excerpt) + '</div>' : '')
-          + '<button class="viktig-hero-btn">Les mer →</button>';
+          + (excerpt ? '<div class="viktig-hero-desc">' + escHtml(excerpt) + '</div>' : '');
       }
 
       // ── NESTE ARRANGEMENT ─────────────────────────────────
