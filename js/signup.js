@@ -158,9 +158,30 @@ document.getElementById('regForm').addEventListener('submit', async function (e)
 
   const btn = this.querySelector('button[type="submit"]');
   btn.disabled    = true;
-  btn.textContent = 'Sender kode…';
+  btn.textContent = 'Sjekker…';
 
   const formattedPhone = formatPhone(phone);
+
+  // Check if phone or email already exists before sending SMS
+  const { data: existingPhone } = await db.from('members').select('id').eq('phone', formattedPhone).maybeSingle();
+  if (existingPhone) {
+    fieldError('phoneNumber', 'err-phoneNumber', true);
+    document.getElementById('err-phoneNumber').textContent = 'Dette telefonnummeret er allerede registrert. Vennligst logg inn.';
+    btn.disabled    = false;
+    btn.textContent = 'Bli medlem';
+    return;
+  }
+
+  const { data: existingEmail } = await db.from('members').select('id').eq('email', emailVal).maybeSingle();
+  if (existingEmail) {
+    fieldError('email', 'err-email', true);
+    document.getElementById('err-email').textContent = 'Denne e-postadressen er allerede registrert. Vennligst logg inn.';
+    btn.disabled    = false;
+    btn.textContent = 'Bli medlem';
+    return;
+  }
+
+  btn.textContent = 'Sender kode…';
   const { error: otpError } = await db.auth.signInWithOtp({ phone: formattedPhone });
 
   if (otpError) {
